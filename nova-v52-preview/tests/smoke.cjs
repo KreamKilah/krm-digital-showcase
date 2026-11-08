@@ -60,6 +60,31 @@ const fs=require('node:fs');
   }catch(e){failed=true;results.push({width,pass:false,error:e.message,errors})}
   await ctx.close();
  }
+
+ // Normal-motion desktop pass verifies that cinematic animation scripts actually initialize.
+ const motionCtx=await browser.newContext({viewport:{width:1440,height:900},deviceScaleFactor:1,reducedMotion:'no-preference'});
+ const motionPage=await motionCtx.newPage();const motionErrors=[];motionPage.on('pageerror',e=>motionErrors.push(e.message));
+ try{
+   const resp=await motionPage.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
+   if(!resp || resp.status()>=400)throw new Error('Normal-motion HTTP failure');
+   await motionPage.waitForFunction(()=>!!window.gsap&&!!window.ScrollTrigger,{timeout:18000});
+   await motionPage.waitForFunction(()=>document.querySelectorAll('.cine-rule').length>=2,{timeout:18000});
+   await motionPage.locator('#leistungen').scrollIntoViewIfNeeded();
+   await motionPage.waitForTimeout(1200);
+   const anim=await motionPage.evaluate(()=>({
+      gsapVersion:window.gsap?.version,
+      editorialRules:document.querySelectorAll('.cine-rule').length,
+      hasMasks:document.querySelectorAll('.cine-mask').length,
+      shouldHaveMasks:matchMedia('(min-width: 900px) and (hover: hover) and (pointer: fine)').matches,
+      overflow:document.documentElement.scrollWidth-innerWidth
+   }));
+   if(anim.shouldHaveMasks && anim.hasMasks<4)throw new Error('Missing desktop photo mask animation');
+   if(anim.overflow>3)throw new Error('Normal-motion overflow '+anim.overflow);
+   if(motionErrors.length)throw new Error('Normal-motion JS errors: '+motionErrors.join(' | '));
+   await motionPage.screenshot({path:'qa-screenshots/motion-desktop-1440.png'});
+   results.push({mode:'normal-motion',pass:true,anim,errors:motionErrors});
+ }catch(e){failed=true;results.push({mode:'normal-motion',pass:false,error:e.message,errors:motionErrors})}
+ await motionCtx.close();
  await browser.close();
  fs.writeFileSync('qa-screenshots/report.json',JSON.stringify(results,null,2));
  console.log('V52 QA RESULTS '+JSON.stringify(results));
