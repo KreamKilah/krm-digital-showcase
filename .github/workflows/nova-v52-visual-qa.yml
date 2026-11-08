@@ -1,0 +1,26 @@
+name: NOVA V5.2 cinematic visual QA
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser dependencies
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test V5.2 mobile tablet desktop
+        run: node nova-v52-preview/tests/smoke.cjs
+      - name: Capture screenshots and test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nova-v52-visual-report
+          path: qa-screenshots/
+          retention-days: 7
