@@ -387,9 +387,14 @@ function trackChapter(){
   if(scenePending)return;
   scenePending=true;
   requestAnimationFrame(()=>{
-    const focal=innerHeight*(innerWidth<=800?.72:.55);
-    let selected=0;
-    chapters.forEach((ch,i)=>{if(ch.getBoundingClientRect().top<=focal)selected=i});
+    const focal=innerHeight*(innerWidth<=800?.60:.55);
+    let selected=0,nearest=Infinity;
+    chapters.forEach((ch,i)=>{
+      const rect=ch.getBoundingClientRect();
+      const center=(rect.top+rect.bottom)/2;
+      const distance=Math.abs(center-focal);
+      if(distance<nearest){nearest=distance;selected=i}
+    });
     activate(selected);
     scenePending=false;
   });
