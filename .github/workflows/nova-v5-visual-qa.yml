@@ -1,0 +1,26 @@
+name: NOVA V5 visual regression QA
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test dependencies
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Run V5 tests at 390px and 1440px
+        run: node nova-v5-preview/tests/smoke.cjs
+      - name: Save screenshots and QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nova-v5-visual-qa
+          path: qa-screenshots/
+          retention-days: 7
