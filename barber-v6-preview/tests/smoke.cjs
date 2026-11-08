@@ -31,6 +31,8 @@ const fs=require('node:fs');
    }
    const svc=page.locator('[data-svc="beard"]');await svc.scrollIntoViewIfNeeded();await svc.click();
    if(await svc.getAttribute('aria-pressed')!=='true')throw Error('Service choice not selected');
+   await page.waitForTimeout(320);
+   if(await page.locator('[data-svc="fade"]').getAttribute('aria-pressed')!=='false')throw Error('Old service selection remained pressed');
    if(!(await page.locator('#serviceFocusTitle').innerText()).includes('BEARD'))throw Error('Service preview not updated');
    await page.screenshot({path:'v6-qa/services-'+width+'.png'});
    await page.locator('#book').scrollIntoViewIfNeeded();
@@ -44,6 +46,16 @@ const fs=require('node:fs');
     price:document.getElementById('ticketPrice').textContent
    }));
    if(summary.service!=='BEARD'||summary.day!=='Tag B'||summary.time!=='12:30'||summary.price!=='19 €')throw Error('Demo ticket not updated '+JSON.stringify(summary));
+   const selectedAttrs=await page.evaluate(()=>({
+    service:document.querySelector('[data-book-service="BEARD"]').getAttribute('aria-pressed'),
+    previousService:document.querySelector('[data-book-service="FADE"]').getAttribute('aria-pressed'),
+    day:document.querySelector('[data-book-day="Tag B"]').getAttribute('aria-pressed'),
+    previousDay:document.querySelector('[data-book-day="Tag A"]').getAttribute('aria-pressed'),
+    time:document.querySelector('[data-book-time="12:30"]').getAttribute('aria-pressed'),
+    previousTime:document.querySelector('[data-book-time="10:00"]').getAttribute('aria-pressed')
+   }));
+   if(selectedAttrs.service!=='true'||selectedAttrs.previousService!=='false'||selectedAttrs.day!=='true'||selectedAttrs.previousDay!=='false'||selectedAttrs.time!=='true'||selectedAttrs.previousTime!=='false')throw Error('Selection highlight did not sync '+JSON.stringify(selectedAttrs));
+   await page.waitForTimeout(320);
    await page.screenshot({path:'v6-qa/ticket-'+width+'.png'});
    await page.locator('#viewTicket').click();
    if(!await page.locator('#ticketDialog').evaluate(el=>el.open))throw Error('Ticket modal did not open');
