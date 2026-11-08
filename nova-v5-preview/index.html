@@ -382,10 +382,21 @@ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const chapters=[...document.querySelectorAll('[data-chapter]')],sceneImgs=[...document.querySelectorAll('[data-scene]')],sceneIndex=document.getElementById('sceneIndex');
 const labels=['THE SILHOUETTE','THE DETAIL','THE FEELING'];let last=-1;
 function activate(i){if(i===last||i<0||i>2)return;last=i;chapters.forEach((c,j)=>c.classList.toggle('active',j===i));sceneImgs.forEach((c,j)=>c.classList.toggle('active',j===i));sceneIndex.textContent=String(i+1).padStart(2,'0')+' / 03 — '+labels[i]}
-if('IntersectionObserver' in window){
-  const obs=new IntersectionObserver(entries=>{entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio).forEach(e=>activate(Number(e.target.dataset.chapter)))},{rootMargin:'-24% 0px -34% 0px',threshold:0});
-  chapters.forEach(el=>obs.observe(el));
+let scenePending=false;
+function trackChapter(){
+  if(scenePending)return;
+  scenePending=true;
+  requestAnimationFrame(()=>{
+    const focal=innerHeight*(innerWidth<=800?.72:.55);
+    let selected=0;
+    chapters.forEach((ch,i)=>{if(ch.getBoundingClientRect().top<=focal)selected=i});
+    activate(selected);
+    scenePending=false;
+  });
 }
+addEventListener('scroll',trackChapter,{passive:true});
+addEventListener('resize',trackChapter,{passive:true});
+trackChapter();
 if(reduced||!window.gsap||!window.ScrollTrigger)return;
 gsap.registerPlugin(ScrollTrigger);
 const intro=gsap.timeline({defaults:{ease:'power3.out'}});
