@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b0d">
+<meta name="description" content="NOVA DETAIL — cinematografische Webdesign-Demo für Premium-Fahrzeugaufbereitung. Fiktives Unternehmen, keine Buchungen.">
+<title>NOVA DETAIL | Die Kunst der Perfektion — Konzeptwebsite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080b0d;--bg2:#101417;--panel:#121719;--ink:#f2f2ed;--muted:#9da5a5;--gold:#d6b988;--gold2:#a78a60;--line:rgba(255,255,255,.15);--display:'Barlow Condensed',Impact,'Arial Narrow',sans-serif;--body:'Manrope',Arial,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:92px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}button,input{font:inherit}
+img{display:block;width:100%}button{cursor:pointer}
+::selection{background:var(--gold);color:#091011}
+.wrap{width:min(100% - 92px,1380px);margin-inline:auto}
+.mini{font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:800}
+.eyebrow{display:inline-flex;align-items:center;gap:14px;color:var(--gold);font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:800}
+.eyebrow:before{content:"";width:26px;height:1px;background:var(--gold)}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-family:var(--display);line-height:.87;letter-spacing:-.027em}
+h2{font-size:clamp(72px,8.1vw,142px)}
+.p{color:var(--muted);font-size:clamp(14px,1.18vw,17px);line-height:1.8}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:22px;min-height:56px;padding:17px 22px;font-size:11px;font-weight:800;letter-spacing:.095em;text-transform:uppercase;border:1px solid var(--gold);transition:background .25s,color .25s,transform .25s}
+.btn .arrow{font-size:19px;font-weight:400;line-height:1}
+.btn:hover{background:var(--gold);color:#091011;transform:translateY(-2px)}
+.btn.gold{background:var(--gold);color:#091011}.btn.gold:hover{background:#f4dcb8}
+.btn.ghost{border-color:rgba(255,255,255,.38)}.btn.ghost:hover{border-color:var(--gold)}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.demo-ribbon{height:31px;background:#d6b988;color:#111512;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px 12px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:900}
+.sitehead{position:absolute;top:31px;left:0;right:0;z-index:20;border-bottom:1px solid rgba(255,255,255,.2)}
+.nav{height:86px;display:flex;align-items:center;justify-content:space-between;gap:30px}
+.brand{font-family:var(--display);font-size:32px;font-weight:800;line-height:.78;letter-spacing:.09em;display:inline-flex;flex-direction:column}
+.brand span{color:var(--gold);font-family:var(--body);font-size:9px;font-weight:900;letter-spacing:.54em;margin-top:9px;padding-left:2px}
+.navlinks{display:flex;align-items:center;gap:36px}
+.navlinks>a:not(.btn){font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#fff9;transition:color .2s}
+.navlinks>a:hover{color:var(--gold)}
+.nav .btn{min-height:43px;padding:10px 16px}
+.menu{display:none;border:1px solid #ffffff55;background:#111a1ba8;color:white;padding:10px 13px;font-size:22px}
+.hero{height:min(870px,97svh);min-height:650px;position:relative;isolation:isolate;background:#080b0d;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:-3;background-image:url('https://images.pexels.com/photos/5438609/pexels-photo-5438609.jpeg?auto=compress&cs=tinysrgb&w=2200');background-position:center 58%;background-size:cover;transform:scale(1.04);animation:zoom-in 2.4s ease-out both}
+.hero:after{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,#05080af2 0%,#05080ac4 29%,#05080a3e 66%,#05080a40 100%),linear-gradient(0deg,#070a0cf7 0%,transparent 34%,#070a0c5c 100%)}
+.hero-glow{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 76% 67%,rgba(204,180,141,.12),transparent 36%)}
+.hero-inner{height:100%;display:flex;align-items:center;padding-top:90px;position:relative}
+.hero-content{width:min(795px,74%);margin-top:30px}
+.hero h1{font-size:clamp(96px,12vw,210px);font-weight:900;text-transform:uppercase;margin:27px 0 27px}
+.hero h1 .line{display:block}.hero h1 .outline{color:transparent;font-size:.68em;-webkit-text-stroke:1.7px rgba(255,255,255,.89)}
+.hero .intro{max-width:440px;font-size:14px;line-height:1.85;letter-spacing:.01em;color:#eff0edbe}
+.hero-cta{margin-top:34px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.hero-note{position:absolute;right:0;bottom:75px;display:flex;gap:16px;align-items:center;writing-mode:vertical-rl;font-size:10px;letter-spacing:.25em;color:#ecece9b0}
+.hero-note:before{content:"";height:70px;width:1px;background:#ffffff88}
+.hero-bottom{position:absolute;bottom:31px;left:0;right:0;display:flex;justify-content:space-between;align-items:center}
+.hero-bottom span{color:#e2e2dd9c;font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}
+.tiny-scroll{display:flex;gap:12px;align-items:center}
+.tiny-scroll i{display:block;width:65px;height:1px;background:var(--gold)}
+.index{font-family:var(--display);font-size:20px;letter-spacing:.08em}
+@keyframes zoom-in{from{transform:scale(1.16);filter:brightness(.48)}to{transform:scale(1.04);filter:brightness(1)}}
+.oversize{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#0e1214;white-space:nowrap;padding:21px 0}
+.oversize-track{display:inline-flex;gap:38px;align-items:center;font-family:var(--display);font-size:clamp(28px,4vw,50px);font-weight:700;letter-spacing:.04em;animation:marquee 32s linear infinite}
+.oversize-track span{display:inline-flex;align-items:center;gap:38px}.oversize-track b{font-size:14px;color:var(--gold)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+.section{padding:130px 0}
+.sectionhead{display:flex;align-items:flex-end;justify-content:space-between;gap:50px;margin-bottom:70px}
+.sectionhead h2{max-width:800px;margin-top:24px;text-transform:uppercase}
+.sectionhead .p{max-width:340px;margin-bottom:8px}
+.gold-text{color:var(--gold)}
+.about-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:80px;align-items:center}
+.about-media{height:690px;overflow:hidden;position:relative;background:#14191b}
+.about-media img{height:100%;object-fit:cover;object-position:center;filter:saturate(.55);transition:transform 1s}
+.about-media:hover img{transform:scale(1.04)}
+.frame-number{position:absolute;bottom:30px;left:30px;font-size:11px;letter-spacing:.2em;color:white;background:#0008;padding:13px}
+.about-copy h2{margin-top:23px;margin-bottom:33px;text-transform:uppercase}
+.about-copy .p{max-width:470px}
+.about-copy .btn{margin-top:39px}
+.micro-row{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;border-top:1px solid var(--line);margin-top:56px;padding-top:24px}
+.micro-row strong{font-family:var(--display);font-size:49px;font-weight:700;line-height:1;color:var(--gold)}
+.micro-row label{display:block;margin-top:8px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.services{background:#111618}
+.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.service{position:relative;min-height:520px;overflow:hidden;background:#181e20;isolation:isolate}
+.service img{height:100%;position:absolute;inset:0;object-fit:cover;filter:grayscale(.15) brightness(.75);transition:transform .8s ease,filter .5s ease}
+.service:hover img{transform:scale(1.07);filter:grayscale(0) brightness(.92)}
+.service:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#05080a35 0%,transparent 28%,#05080aee 100%);z-index:0}
+.service-content{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;justify-content:space-between;padding:29px}
+.service .n{font-size:12px;font-weight:800;color:var(--gold);letter-spacing:.13em}
+.service h3{font-size:clamp(44px,5vw,74px);text-transform:uppercase}
+.service p{color:#e7e7e2b8;font-size:12px;line-height:1.7;margin-top:14px;max-width:260px}
+.service .service-arrow{position:absolute;top:24px;right:27px;font-size:28px;color:var(--gold)}
+.visual-statement{min-height:720px;background:url('https://images.pexels.com/photos/32723285/pexels-photo-32723285.jpeg?auto=compress&cs=tinysrgb&w=1800') center 51%/cover;position:relative;display:flex;align-items:center;isolation:isolate}
+.visual-statement:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#070a0ce0,#070a0c72 50%,#070a0c1a),linear-gradient(0deg,#070a0c7c,transparent 55%,#070a0c4c)}
+.visual-statement h2{max-width:1050px;text-transform:uppercase}
+.visual-statement p{font-size:13px;letter-spacing:.15em;color:#fff9;text-transform:uppercase;margin-top:30px}
+.compare-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:75px;align-items:center}
+.compare-copy h2{margin-top:22px;margin-bottom:30px;text-transform:uppercase}
+.compare-copy .p{max-width:350px}
+.compare-note{margin-top:28px;font-size:11px;line-height:1.7;color:#949c9c}
+.compare-box{--split:50%;height:560px;position:relative;overflow:hidden;background:#172123;touch-action:pan-y;user-select:none}
+.compare-box .under,.compare-box .over{position:absolute;inset:0;background-image:url('https://images.pexels.com/photos/9966016/pexels-photo-9966016.jpeg?auto=compress&cs=tinysrgb&w=1600');background-size:cover;background-position:center}
+.compare-box .under{filter:grayscale(1) brightness(.6) contrast(.67)}
+.compare-box .over{clip-path:inset(0 0 0 var(--split));filter:contrast(1.13) saturate(1.07)}
+.compare-box .line{position:absolute;left:var(--split);top:0;bottom:0;width:2px;background:white;transform:translateX(-1px);z-index:3;pointer-events:none}
+.compare-box .handle{position:absolute;top:50%;left:var(--split);transform:translate(-50%,-50%);width:59px;height:59px;border:2px solid white;background:#141818b0;z-index:4;border-radius:100%;display:flex;justify-content:center;align-items:center;pointer-events:none;color:white;letter-spacing:.4em;padding-left:4px;font-size:15px;box-shadow:0 0 0 5px #0003}
+.compare-box .label{position:absolute;bottom:24px;z-index:5;display:inline-block;background:#080b0dd6;padding:10px 15px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:10px;pointer-events:none}
+.compare-box .label.before{left:22px}.compare-box .label.after{right:22px}
+.compare-box input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;z-index:10;margin:0}
+.compare-box input:focus-visible{opacity:.14;outline:3px solid var(--gold);outline-offset:-4px}
+.process{background:#111618}
+.process-grid{display:grid;grid-template-columns:1fr 1fr;gap:130px}
+.process h2{margin-top:24px;text-transform:uppercase}
+.steps{border-top:1px solid var(--line)}
+.step{display:grid;grid-template-columns:70px 1fr;gap:25px;padding:33px 0;border-bottom:1px solid var(--line)}
+.step b{font-family:var(--display);font-size:28px;font-weight:700;color:var(--gold)}
+.step h3{font-size:38px;text-transform:uppercase}
+.step p{font-size:13px;color:var(--muted);line-height:1.7;margin-top:9px;max-width:340px}
+.gallery{display:grid;grid-template-columns:1.25fr .75fr;grid-template-rows:330px 330px;gap:14px}
+.gallery figure{margin:0;position:relative;overflow:hidden;background:#171a1c}
+.gallery figure:first-child{grid-row:span 2}
+.gallery img{height:100%;object-fit:cover;filter:brightness(.83) grayscale(.25);transition:transform .8s ease,filter .5s}
+.gallery figure:hover img{transform:scale(1.04);filter:brightness(.95)}
+.gallery figcaption{position:absolute;bottom:21px;left:22px;right:22px;font-size:11px;text-transform:uppercase;font-weight:800;letter-spacing:.15em;color:white;text-shadow:0 2px 10px #000}
+.gallery figcaption:before{content:"";display:inline-block;width:20px;height:1px;background:var(--gold);vertical-align:middle;margin-right:9px}
+.qa{max-width:850px;margin:0 auto}
+.qa h2{text-transform:uppercase;margin-top:18px;margin-bottom:55px}
+details{border-top:1px solid var(--line);padding:0}
+details:last-child{border-bottom:1px solid var(--line)}
+summary{padding:25px 0;display:flex;align-items:center;justify-content:space-between;gap:20px;cursor:pointer;font-weight:800;font-size:14px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary:after{content:'+';font-size:28px;font-weight:400;color:var(--gold)}
+details[open] summary:after{content:'−'}
+details p{color:var(--muted);line-height:1.8;font-size:13px;max-width:660px;padding:0 0 28px}
+.final-cta{position:relative;min-height:660px;background:#080b0d url('https://images.pexels.com/photos/28984537/pexels-photo-28984537.jpeg?auto=compress&cs=tinysrgb&w=1700') center 52%/cover;display:flex;align-items:center;isolation:isolate}
+.final-cta:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#05080af0 0%,#05080aca 44%,#05080a50 100%),linear-gradient(0deg,#080b0dc4,transparent 40%)}
+.final-cta h2{margin:22px 0 30px;text-transform:uppercase}
+.final-cta .p{max-width:460px;color:#f2f1e9af;margin-bottom:34px}
+.footer{background:#080b0d;padding:65px 0 30px;border-top:1px solid var(--line)}
+.footer-top{display:flex;justify-content:space-between;gap:50px;align-items:start}
+.footer p{font-size:12px;line-height:1.8;color:var(--muted);max-width:410px}
+.footer-bottom{display:flex;gap:20px;justify-content:space-between;border-top:1px solid var(--line);margin-top:50px;padding-top:26px}
+.footer-bottom span,.footer-bottom a{font-size:10px;letter-spacing:.1em;color:#a0a6a7}
+.footer-bottom a:hover{color:var(--gold)}
+.reveal{opacity:0;transform:translateY(35px);transition:opacity .85s ease,transform .85s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+@media(max-width:1100px){.wrap{width:min(100% - 55px,1380px)}.about-grid{gap:40px}.about-media{height:580px}.process-grid{gap:60px}.hero h1{font-size:clamp(95px,12vw,170px)}}
+@media(max-width:800px){.wrap{width:min(100% - 40px,1380px)}.menu{display:block}.navlinks{display:none;position:absolute;top:86px;left:0;right:0;padding:25px 22px 30px;background:#0c1112f7;flex-direction:column;align-items:stretch;gap:24px;border-bottom:1px solid var(--line)}.navlinks.open{display:flex}.hero{height:780px;min-height:690px}.hero-bg{background-position:62% center}.hero:after{background:linear-gradient(90deg,#05080ad8 0%,#05080a85 53%,#05080a4a),linear-gradient(0deg,#080b0ded 0%,transparent 40%,#080b0c4e)}.hero-content{width:min(100%,630px)}.hero h1{font-size:clamp(83px,15vw,140px)}.hero-note{display:none}.section{padding:90px 0}.sectionhead{display:block;margin-bottom:39px}.sectionhead .p{margin-top:24px;max-width:550px}.about-grid,.compare-grid,.process-grid{grid-template-columns:1fr;gap:46px}.about-media{height:560px;order:2}.about-copy{order:1}.service-grid{grid-template-columns:1fr 1fr}.service:last-child{grid-column:span 2}.service{min-height:400px}.compare-box{height:470px}.gallery{grid-template-rows:260px 260px}.visual-statement{min-height:550px}}
+@media(max-width:580px){.wrap{width:min(100% - 34px,1380px)}.demo-ribbon{height:auto;min-height:29px;font-size:7px;letter-spacing:.09em}.sitehead{top:29px}.nav{height:73px}.brand{font-size:27px}.brand span{font-size:8px}.navlinks{top:73px}.hero{height:790px;min-height:0;max-height:none}.hero-bg{background-position:65% 44%;background-size:auto 100%}.hero:after{background:linear-gradient(0deg,#080b0df4 0%,#06090bc4 19%,#06090b44 65%,#06090b8e 100%),linear-gradient(90deg,#080b0dc9,transparent)}.hero-inner{align-items:flex-end;padding-top:100px;padding-bottom:133px}.hero-content{margin:0}.hero h1{font-size:clamp(72px,21.4vw,120px);margin:19px 0 22px;line-height:.84}.hero h1 .outline{font-size:.58em;-webkit-text-stroke:1px rgba(255,255,255,.89)}.hero .intro{font-size:12px;max-width:330px}.hero-cta{margin-top:26px}.btn{min-height:52px;font-size:10px;padding:14px 17px}.hero-bottom{bottom:26px}.hero-bottom span{font-size:8px}.tiny-scroll i{width:26px}.index{font-size:18px}h2{font-size:clamp(66px,17vw,95px)}.section{padding:79px 0}.eyebrow{font-size:9px}.sectionhead{margin-bottom:29px}.about-copy h2{margin-bottom:20px}.about-media{height:440px}.micro-row{margin-top:37px}.micro-row strong{font-size:42px}.service-grid{grid-template-columns:1fr;gap:12px}.service,.service:last-child{grid-column:auto;min-height:455px}.service h3{font-size:69px}.visual-statement{min-height:580px;background-position:58% 50%}.compare-box{height:440px}.compare-grid{gap:28px}.process-grid{gap:36px}.step{grid-template-columns:44px 1fr;gap:14px}.step h3{font-size:33px}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:280px 220px;gap:9px}.gallery figure:first-child{grid-column:span 2;grid-row:auto}.gallery figcaption{font-size:8px;left:11px;bottom:12px}.qa h2{margin-bottom:37px}.final-cta{min-height:600px;background-position:58% center}.final-cta h2{font-size:clamp(76px,20vw,120px)}.footer-top,.footer-bottom{display:block}.footer p{margin-top:24px}.footer-bottom>*{display:block;margin-top:12px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-bg,.oversize-track{animation:none}.reveal{opacity:1;transform:none;transition:none}*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* V3 immersive photo gallery / fast accessible interactions */
+.reveal{opacity:1;transform:none}.reveal.in{animation:gentleReveal .8s ease both}
+@keyframes gentleReveal{from{opacity:.77;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+#galerie .gallery figure{cursor:zoom-in}
+#galerie .gallery figure:after{content:'↗ EXPLORE';position:absolute;right:17px;top:18px;font-size:9px;font-weight:800;letter-spacing:.12em;background:#080b0dcc;border:1px solid #ffffff70;padding:12px 14px;opacity:0;transform:translateY(7px);transition:opacity .25s,transform .25s;color:#fff}
+#galerie .gallery figure:hover:after,#galerie .gallery figure:focus-visible:after{opacity:1;transform:none}
+#galerie .gallery figure:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.photo-modal{position:fixed;inset:0;margin:auto;padding:0;border:1px solid #d6b98875;background:#0a0e10;color:white;width:min(96vw,1250px);max-width:none;max-height:94svh;box-shadow:0 35px 100px #000a;overflow:hidden}
+.photo-modal::backdrop{background:#020506ed;backdrop-filter:blur(15px)}
+.photo-view{display:grid;grid-template-rows:minmax(0,1fr) auto;min-height:360px;max-height:90svh}
+.photo-view>img{width:100%;height:100%;max-height:calc(90svh - 90px);object-fit:contain;background:#090d0d}
+.photo-tools{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 23px;background:#111719}
+.photo-tools span{font-size:11px;font-weight:600;color:#bec3bb;line-height:1.5}
+.photo-nav{display:flex;align-items:center;gap:9px}
+.photo-nav button,.modal-close{width:42px;height:42px;border:1px solid #d6b98880;background:#111719;color:var(--gold);font-size:22px;display:flex;align-items:center;justify-content:center}
+.photo-nav button:hover,.modal-close:hover{background:var(--gold);color:#111}
+.modal-close{position:absolute;z-index:1;top:14px;right:14px;background:#080c0df0}
+@media(max-width:630px){#galerie .gallery figure:after{opacity:1;transform:none;top:8px;right:8px;font-size:8px;padding:8px}.photo-tools{padding:12px;gap:8px}.photo-tools span{font-size:10px}.photo-nav button{height:36px;width:36px}.photo-view{min-height:300px}}
+@media(prefers-reduced-motion:reduce){.reveal.in{animation:none}}
+
+/* V4 — original-art cinematic hero / studio-light interaction */
+.sitehead{position:fixed;top:31px;transition:background .28s,top .28s,box-shadow .28s,border-color .28s}
+.sitehead.is-scrolled{top:0;background:rgba(8,11,13,.94);border-bottom-color:rgba(214,185,136,.32);box-shadow:0 13px 48px #0006;backdrop-filter:blur(16px)}
+.scroll-meter{position:fixed;top:0;left:0;width:var(--scroll,0%);height:2px;background:linear-gradient(90deg,var(--gold2),#ffe2a6);z-index:200;pointer-events:none}
+.hero{height:min(950px,100svh);min-height:710px}
+.hero-bg{background-image:url('https://kreamkilah.github.io/nova-detail-demo-2026/assets/nova-hero.webp'),url('https://images.pexels.com/photos/5438609/pexels-photo-5438609.jpeg?auto=compress&cs=tinysrgb&w=2200');background-position:center 52%;background-size:cover;animation:hero-unveil 2s cubic-bezier(.2,.7,.2,1) both}
+@keyframes hero-unveil{0%{opacity:.25;filter:brightness(.4) blur(8px);transform:scale(1.13)}100%{opacity:1;filter:brightness(1) blur(0);transform:scale(1.04)}}
+.hero:after{background:linear-gradient(90deg,rgba(3,6,7,.95) 0%,rgba(3,6,7,.83) 24%,rgba(3,6,7,.38) 47%,rgba(3,6,7,.07) 76%),linear-gradient(0deg,#070a0df5 0%,transparent 37%,#070a0c48 100%)}
+.hero-glow{background:radial-gradient(ellipse at var(--glow-x,78%) var(--glow-y,59%),rgba(230,176,104,.17),transparent 32%);transition:opacity .65s ease}
+.hero-grain{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.11;background:repeating-linear-gradient(90deg,transparent 0 2px,#fff1 3px 3.5px,transparent 4px 7px);mask-image:linear-gradient(90deg,transparent 10%,black)}
+.hero-content{width:min(840px,70%);position:relative}
+.hero h1{font-size:clamp(96px,10.3vw,175px);line-height:.86;letter-spacing:-.045em;position:relative}
+.hero h1 .outline{font-size:.64em;color:transparent;-webkit-text-stroke:1.3px rgba(255,255,255,.9)}
+.hero h1 .line:first-child{text-shadow:0 4px 32px rgba(0,0,0,.37)}
+.hero .intro{color:#f1f0e5c9;text-wrap:pretty}
+.hero .eyebrow{color:#ecd3ab}
+.hero .eyebrow:before{background:#ecd3ab}
+.hero-shine{position:absolute;z-index:-1;left:-20%;width:70%;top:0;bottom:0;pointer-events:none;background:linear-gradient(112deg,transparent 41%,rgba(240,206,148,.045) 49%,transparent 53%);transform:translateX(-100%);animation:light-pass 2.7s 1.2s ease-out both}
+@keyframes light-pass{to{transform:translateX(230%)}}
+.hero-tagline{display:flex;align-items:center;gap:15px;margin-bottom:25px;color:#e5d2b6ad;font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+.hero-tagline i{width:38px;height:1px;background:var(--gold);display:inline-block}
+.studio-light{position:absolute;z-index:8;right:max(4.1vw,28px);bottom:104px;min-height:50px;background:rgba(11,15,15,.78);border:1px solid rgba(230,198,148,.7);backdrop-filter:blur(10px);color:#fff2dd;display:flex;align-items:center;gap:15px;padding:12px 18px;letter-spacing:.12em;text-transform:uppercase;font-size:10px;font-weight:800;cursor:pointer;transition:background .22s,transform .22s}
+.studio-light:hover{background:#252019d9;transform:translateY(-2px)}
+.studio-light:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.studio-light .light-dot{width:9px;height:9px;border-radius:50%;background:#ecca91;box-shadow:0 0 13px #f3c77d}
+.studio-light[aria-pressed="false"] .light-dot{background:#777;box-shadow:none}
+.hero.lights-off .hero-bg{animation:none;filter:brightness(.40) saturate(.75);transition:filter .7s ease}
+.hero.lights-off .hero-glow{opacity:.09}
+.hero.lights-off .hero-grain{opacity:.04}
+.hero.lights-off .studio-light{background:rgba(10,12,12,.94)}
+.hero.lights-off .hero-shine{animation:none;opacity:0}
+.hero .hero-note{color:#f6dfb8b8}
+@media(max-width:1000px){.hero h1{font-size:clamp(91px,12vw,160px)}.hero-content{width:min(790px,77%)}}
+@media(max-width:800px){.hero-bg{background-position:67% 50%}.hero-content{width:min(100%,630px)}.studio-light{right:22px;bottom:93px;min-height:42px;padding:9px 13px;font-size:9px}.hero:after{background:linear-gradient(90deg,#050709de,#05070975 65%,#0507092b),linear-gradient(0deg,#080b0de8,transparent 49%,#080b0c55)}}
+@media(max-width:580px){.sitehead{top:29px}.sitehead.is-scrolled{top:0}.hero{height:min(850px,100svh);min-height:780px}.hero-bg{background-position:68% 45%;background-size:auto 100%}.hero:after{background:linear-gradient(0deg,#080b0df6 0%,rgba(5,7,8,.90) 19%,rgba(5,7,8,.27) 64%,rgba(5,7,8,.7) 100%)}.hero-inner{padding-bottom:155px}.hero-content{margin:0;width:100%}.hero h1{font-size:clamp(72px,20.8vw,114px);line-height:.83}.hero h1 .outline{font-size:.59em;-webkit-text-stroke:1px #ffffffdd}.hero-tagline{font-size:8px;margin-bottom:17px}.hero .intro{max-width:360px}.studio-light{top:116px;bottom:auto;right:17px;padding:9px 11px;min-height:39px;font-size:8px}.hero-glow{background:radial-gradient(circle at 60% 46%,#e9b96f24,transparent 45%)}}
+@media(prefers-reduced-motion:reduce){.hero-bg,.hero-shine{animation:none!important}.hero-bg{filter:none!important;transform:scale(1.04)}.hero.lights-off .hero-bg{filter:brightness(.55) saturate(.8)!important}.studio-light{transition:none}.hero-grain{display:none}}
+
+/* NOVA V5 - Obsidian / Champagne design and storytelling */
+:root{--bg:#090b0b;--panel:#131818;--gold:#d4b88b;--gold2:#ae905b;--muted:#9fa8a5;--text:#f3f0e9;--line:rgba(235,232,225,.17)}
+.hero{height:min(940px,100svh);min-height:730px}
+.hero-bg{background-position:60% 52%;animation:zoom-in 1.9s ease-out both}
+.hero:after{background:linear-gradient(90deg,#030608f6 0%,#030608d7 25%,#03060868 51%,#03060810 82%),linear-gradient(0deg,#07090af5,transparent 36%,#07090a44)}
+.hero-glow{background:radial-gradient(ellipse at var(--glow-x,79%) var(--glow-y,55%),#f7bf7430,transparent 35%)}
+.hero-content{width:min(770px,67%)}
+.hero h1{font-size:clamp(104px,10.5vw,177px);line-height:.81;letter-spacing:-.026em;margin:25px 0 28px}
+.hero h1 .gold-text{color:#ddbc8a}
+.hero h1 .outline{font-size:.50em;line-height:1.08;-webkit-text-stroke:1.1px #f3eee3}
+.hero .intro{color:#e9e4d8c2;font-size:14px;max-width:455px}
+.hero-tagline{letter-spacing:.2em}
+.hero-light-toggle{z-index:10}
+.section{padding:120px 0}
+.about-media img{filter:contrast(1.1) saturate(.67)}
+.about-copy h2{letter-spacing:-.025em}
+.services{background:#111715}
+.service-grid{gap:15px}
+.service{min-height:575px}
+.service img{filter:brightness(.7) saturate(.72)}
+.service:hover img{filter:brightness(.89) saturate(.86)}
+.service:before{content:"";z-index:3;position:absolute;inset:15px;border:1px solid #d4b88b44;opacity:0;transition:opacity .5s;pointer-events:none}
+.service:hover:before{opacity:1}
+.service h3{font-size:clamp(52px,5vw,79px);letter-spacing:-.025em}
+.nova-story{background:#090e0e;overflow:clip}
+.nova-story-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:8vw}
+.nova-story-stage{position:sticky;top:12vh;height:76vh;min-height:540px;overflow:hidden;background:#141a19}
+.nova-story-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.065);transition:opacity .8s ease,transform 1.3s ease}
+.nova-story-stage img.active{opacity:1;transform:scale(1.008)}
+.nova-story-stage:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,#04080899,transparent 52%)}
+.scene-index{z-index:1;position:absolute;bottom:30px;left:30px;font-size:10px;letter-spacing:.18em;font-weight:800;color:#f5dfb6}
+.nova-story-intro{padding-top:35px}
+.nova-story-intro h2{margin:24px 0 25px;font-size:clamp(75px,7.7vw,132px)}
+.nova-story-intro .p{max-width:400px}
+.scene-chapter{min-height:64vh;display:flex;flex-direction:column;justify-content:center;border-top:1px solid var(--line);opacity:.46;transition:opacity .45s}
+.scene-chapter.active{opacity:1}
+.scene-chapter span{font-size:10px;letter-spacing:.2em;color:var(--gold);font-weight:800}
+.scene-chapter h3{font-size:clamp(60px,5.8vw,95px);margin:20px 0}
+.scene-chapter p{color:var(--muted);font-size:14px;line-height:1.8;max-width:380px}
+.visual-statement{min-height:700px}
+.visual-statement h2{font-size:clamp(67px,7.4vw,125px)}
+.gallery img{filter:brightness(.77) saturate(.7)}
+.gallery figure:hover img{filter:brightness(.94) saturate(.89)}
+#galerie .gallery figure:after{opacity:1;transform:none}
+.story-placeholder-notice{font-size:11px;color:var(--muted)}
+@media(max-width:1050px){.nova-story-grid{gap:4vw}.nova-story-intro h2{font-size:80px}.hero h1{font-size:clamp(99px,12vw,159px)}}
+@media(max-width:800px){.hero-bg{background-position:66% 50%}.hero-content{width:min(100%,600px)}.nova-story-grid{grid-template-columns:1fr;gap:35px}.nova-story-stage{position:relative;top:auto;min-height:0;height:490px}.scene-chapter{min-height:255px}.nova-story-intro{padding:0}.nova-story-intro h2{font-size:clamp(68px,12vw,99px)}.section{padding:92px 0}}
+@media(max-width:580px){.hero{height:850px;min-height:770px}.hero-bg{background-position:67% 41%;background-size:auto 100%}.hero:after{background:linear-gradient(0deg,#070b0df5 0%,#070b0dc9 22%,#070b0d48 62%,#070b0d93 100%),linear-gradient(90deg,#060909d6,transparent)}.hero-inner{padding-bottom:155px}.hero h1{font-size:clamp(75px,20vw,113px);line-height:.81}.hero h1 .outline{font-size:.5em;-webkit-text-stroke:1px #eee9dd}.hero .intro{font-size:12px}.studio-light{top:111px;bottom:auto;font-size:8px;min-height:38px;padding:9px 11px}.section{padding:77px 0}.nova-story-stage{height:400px}.nova-story-intro h2{font-size:clamp(65px,16vw,97px)}.scene-chapter{min-height:225px}.scene-chapter h3{font-size:68px}.visual-statement{min-height:570px}}
+@media(prefers-reduced-motion:reduce){.nova-story-stage img{transition:none}.scene-chapter{transition:none}.hero-bg{animation:none}}
+
+</style>
+<link rel="preload" as="image" href="https://kreamkilah.github.io/nova-detail-demo-2026/assets/nova-hero.webp" fetchpriority="high">
+<meta property="og:image" content="https://kreamkilah.github.io/nova-detail-demo-2026/https://kreamkilah.github.io/nova-detail-demo-2026/assets/nova-hero.webp">
+<meta property="og:title" content="NOVA DETAIL — Cinematic Automotive Design Concept"><meta property="og:description" content="Unabhängige Demo: luxuriöse Fahrzeugpflege-Website. Nicht offizieller Betrieb.">
+</head>
+<body>
+<div class="scroll-meter" id="scrollMeter" aria-hidden="true"></div>
+<div class="demo-ribbon">Concept Website • Fiktives Unternehmen • Keine Buchungen möglich</div>
+<header class="sitehead"><nav class="wrap nav" aria-label="Hauptnavigation">
+<a class="brand" href="#start" aria-label="Nova Detail Startseite">NOVA<span>D E T A I L</span></a>
+<button class="menu" id="menu" aria-label="Menü öffnen" aria-controls="navlinks" aria-expanded="false">☰</button>
+<div class="navlinks" id="navlinks"><a href="#philosophie">Philosophie</a><a href="#leistungen">Leistungen</a><a href="#vergleich">Erlebnis</a><a href="#erlebnis">Story</a><a href="#galerie">Galerie</a><a href="#kontakt" class="btn">Konzept entdecken <span class="arrow">↗</span></a></div>
+</nav></header>
+<main>
+<section class="hero" id="start" aria-labelledby="hero-title">
+<div class="hero-bg" aria-hidden="true"></div><div class="hero-glow" aria-hidden="true"></div><div class="hero-grain" aria-hidden="true"></div><div class="hero-shine" aria-hidden="true"></div>
+<div class="wrap hero-inner"><div class="hero-content">
+<span class="eyebrow">OBSIDIAN / CHAMPAGNE · VOLUME 05</span>
+<h1 id="hero-title"><span class="line">CRAFTED</span><span class="line gold-text">IN LIGHT.</span><span class="line outline">DRIVEN BY DETAIL.</span></h1>
+<div class="hero-tagline"><i></i><span>CRAFTED LIGHT · CINEMATIC DETAIL · ORIGINAL CONCEPT</span></div><p class="intro">Nicht einfach sauber. Außergewöhnlich. Eine fiktive Premium-Fahrzeugpflege, inszeniert als eigenständige digitale Markenerfahrung.</p>
+<div class="hero-cta"><a class="btn gold" href="#leistungen">Leistungen entdecken <span class="arrow">↗</span></a><a class="btn ghost" href="#vergleich">Das Erlebnis ansehen <span class="arrow">↓</span></a></div>
+</div></div>
+<button type="button" class="studio-light" id="studioLight" aria-pressed="true" aria-label="Studio-Beleuchtung umschalten"><span class="light-dot" aria-hidden="true"></span><span id="studioLightLabel">Licht dimmen</span><span aria-hidden="true">✦</span></button>
+<div class="wrap hero-bottom"><span class="tiny-scroll">SCROLL TO EXPLORE <i></i></span><span class="index">01 / 06</span></div>
+</section>
+<div class="oversize" aria-hidden="true"><div class="oversize-track"><span>PRECISION <b>✦</b> PASSION <b>✦</b> PERFECTION <b>✦</b> EVERY DETAIL MATTERS <b>✦</b></span><span>PRECISION <b>✦</b> PASSION <b>✦</b> PERFECTION <b>✦</b> EVERY DETAIL MATTERS <b>✦</b></span></div></div>
+<section class="section" id="philosophie"><div class="wrap about-grid">
+<div class="about-media reveal"><img src="https://images.pexels.com/photos/33385778/pexels-photo-33385778.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Detailaufnahme eines Scheinwerfers eines luxuriösen Sportwagens bei Nacht" loading="lazy"><div class="frame-number mini">01 / THE ART OF DETAIL</div></div>
+<div class="about-copy reveal"><span class="eyebrow">Unsere Philosophie</span><h2>JEDER<br>REFLEX.<br><span class="gold-text">EIN<br>STATEMENT.</span></h2>
+<p class="p">Jede Linie hat ihre eigene Geschichte. Jeder Glanz eine neue Perspektive. Dieses Konzept zeigt, wie sich Liebe zum Detail in einer unverwechselbaren Markenwelt anfühlen kann.</p>
+<a href="#ablauf" class="btn ghost">Unser Ansatz <span class="arrow">↗</span></a>
+<div class="micro-row"><div><strong>01</strong><label>Fokus auf jedes Detail</label></div><div><strong>∞</strong><label>Leidenschaft als Prinzip</label></div></div>
+</div>
+</div></section>
+<section class="section services" id="leistungen"><div class="wrap">
+<div class="sectionhead reveal"><div><span class="eyebrow">What we do · 003</span><h2>DREI WELTEN.<br><span class="gold-text">EIN ANSPRUCH.</span></h2></div><p class="p">Jede Oberfläche erzählt eine Geschichte. Unser Konzept zeigt drei Bereiche moderner Premium-Fahrzeugpflege.</p></div>
+<div class="service-grid">
+<article class="service reveal"><img src="https://images.pexels.com/photos/20044636/pexels-photo-20044636.jpeg?auto=compress&cs=tinysrgb&w=950" alt="Dunkler eleganter Fahrzeug-Innenraum mit Lederausstattung" loading="lazy"><div class="service-content"><span class="n">SERVICE / 01</span><div><h3>INNER<br>WORLD.</h3><p>Edle Materialien, einzigartige Haptik und ein Erlebnis bis ins letzte Detail.</p></div></div><span class="service-arrow">↗</span></article>
+<article class="service reveal"><img src="https://images.pexels.com/photos/6872572/pexels-photo-6872572.jpeg?auto=compress&cs=tinysrgb&w=950" alt="Professionelle Pflege einer glänzenden schwarzen Fahrzeugoberfläche" loading="lazy"><div class="service-content"><span class="n">SERVICE / 02</span><div><h3>REFINED<br>FINISH.</h3><p>Reflexionen, Klarheit und ein Auftritt, der schon im ersten Licht überzeugt.</p></div></div><span class="service-arrow">↗</span></article>
+<article class="service reveal"><img src="https://images.pexels.com/photos/9966016/pexels-photo-9966016.jpeg?auto=compress&cs=tinysrgb&w=950" alt="Schwarzes Fahrzeug bei der Pflege unter dunkler Beleuchtung" loading="lazy"><div class="service-content"><span class="n">SERVICE / 03</span><div><h3>LASTING<br>CARE.</h3><p>Eine hochwertige Inszenierung von Pflege, Schutz und Werterhalt.</p></div></div><span class="service-arrow">↗</span></article>
+</div></div></section>
+
+<section id="erlebnis" class="section nova-story"><div class="wrap nova-story-grid">
+<div class="nova-story-stage" aria-label="Cinematic Bildergeschichte">
+<img src="https://kreamkilah.github.io/nova-detail-demo-2026/assets/nova-hero.webp" class="active" data-scene="0" alt="Sportlicher Wagen in einem dunklen Atelier, warmes Goldlicht" loading="lazy">
+<img src="https://images.pexels.com/photos/33385778/pexels-photo-33385778.jpeg?auto=compress&cs=tinysrgb&w=1300" data-scene="1" id="storyMacro" alt="Makroansicht von Lack und Scheinwerfer" loading="lazy">
+<img src="https://images.pexels.com/photos/34404465/pexels-photo-34404465.jpeg?auto=compress&cs=tinysrgb&w=1100" data-scene="2" id="storyInterior" alt="Hochwertiges Interieur im automobilen Stil" loading="lazy">
+<div class="scene-index" id="sceneIndex">01 / 03 — THE SILHOUETTE</div></div>
+<div class="nova-story-copy"><div class="nova-story-intro"><span class="eyebrow">Cinematic storytelling</span><h2>THE<br><span class="gold-text">SIGNATURE</span><br>EXPERIENCE.</h2><p class="p">Ein digitaler Rundgang durch die Welt von Licht, Material und Präzision.</p></div>
+<article class="scene-chapter active" data-chapter="0"><span>01 / FIRST IMPRESSION</span><h3>THE<br>SILHOUETTE.</h3><p>Ein Moment. Eine Form. Ein Licht, das jeden Winkel neu interpretiert.</p></article>
+<article class="scene-chapter" data-chapter="1"><span>02 / THE REFLECTION</span><h3>THE<br>DETAIL.</h3><p>Die kleinsten Reflexe verwandeln eine Oberfläche in Charakter.</p></article>
+<article class="scene-chapter" data-chapter="2"><span>03 / THE ATMOSPHERE</span><h3>THE<br>FEELING.</h3><p>Das Besondere entsteht, wenn Design und Handwerk dieselbe Sprache sprechen.</p></article>
+</div></div></section>
+<section class="visual-statement"><div class="wrap reveal"><span class="eyebrow">Driven by obsession</span><h2>NICHT EINFACH<br>SAUBER.<br><span class="gold-text">AUSSERGEWÖHNLICH.</span></h2><p>Where care meets craftsmanship.</p></div></section>
+<section class="section" id="vergleich"><div class="wrap compare-grid">
+<div class="compare-copy reveal"><span class="eyebrow">Das Finish erleben</span><h2>DER<br><span class="gold-text">UNTER-</span><br>SCHIED.</h2><p class="p">Zieh den Regler und entdecke, wie Licht, Kontrast und Reflexion die Wirkung einer Fahrzeugaufnahme verändern.</p><p class="compare-note">INTERAKTIVE BILDSIMULATION — Farb- und Helligkeitseffekt auf derselben Aufnahme. Kein echtes Vorher/Nachher und kein nachgewiesenes Kundenergebnis.</p></div>
+<div class="compare-box reveal" id="comparison" style="--split:50%"><div class="under" aria-hidden="true"></div><div class="over" aria-hidden="true"></div><div class="line" aria-hidden="true"></div><div class="handle" aria-hidden="true">‹ ›</div><span class="label before">Vorher · Simulation</span><span class="label after">Nachher · Simulation</span><input id="split" aria-label="Bildsimulation vergleichen" type="range" min="0" max="100" value="50"></div>
+</div></section>
+<section class="section process" id="ablauf"><div class="wrap process-grid">
+<div class="reveal"><span class="eyebrow">The experience</span><h2>KLAR.<br>PRÄZISE.<br><span class="gold-text">BESONDERS.</span></h2></div>
+<div class="steps reveal"><div class="step"><b>01.</b><div><h3>DEIN FAHRZEUG.</h3><p>Jedes Auto ist anders. Deshalb beginnt echte Qualität damit, die Details zu verstehen.</p></div></div><div class="step"><b>02.</b><div><h3>UNSER KONZEPT.</h3><p>Ein passender Plan, auf das Fahrzeug und seine individuellen Oberflächen abgestimmt.</p></div></div><div class="step"><b>03.</b><div><h3>DER MOMENT.</h3><p>Das Ergebnis spricht nicht laut. Es wirkt auf den ersten Blick.</p></div></div></div>
+</div></section>
+<section class="section" id="galerie"><div class="wrap">
+<div class="sectionhead reveal"><div><span class="eyebrow">Visual stories</span><h2>BEYOND<br><span class="gold-text">THE SURFACE.</span></h2></div><p class="p">Bildwelt einer hochwertigen Fahrzeugpflege. Die Aufnahmen dienen ausschließlich zur Veranschaulichung des Designkonzepts.</p></div>
+<div class="gallery">
+<figure class="reveal"><img loading="lazy" src="https://images.pexels.com/photos/7154638/pexels-photo-7154638.jpeg?auto=compress&cs=tinysrgb&w=1500" alt="Professionelle Fahrzeugpflege aus nächster Nähe"><figcaption>01 — HANDWERK & LEIDENSCHAFT</figcaption></figure>
+<figure class="reveal"><img loading="lazy" src="https://images.pexels.com/photos/34404465/pexels-photo-34404465.jpeg?auto=compress&cs=tinysrgb&w=850" alt="Edler Fahrzeug-Innenraum mit dunklem Leder"><figcaption>02 — INTERIOR</figcaption></figure>
+<figure class="reveal"><img loading="lazy" src="https://images.pexels.com/photos/6873010/pexels-photo-6873010.jpeg?auto=compress&cs=tinysrgb&w=850" alt="Fahrzeug wird mit einer Bürste sorgfältig gereinigt"><figcaption>03 — PRECISION</figcaption></figure>
+</div></div></section>
+<section class="section" id="faq"><div class="wrap qa reveal"><span class="eyebrow">FAQ / Konzept</span><h2>GUT ZU <span class="gold-text">WISSEN.</span></h2>
+<details><summary>Ist NOVA DETAIL ein echtes Unternehmen?</summary><p>Nein. Diese Seite ist ein fiktives Webdesign-Konzept und dient ausschließlich als Demonstration für eine mögliche Kundenwebsite.</p></details>
+<details><summary>Kann ich über diese Seite einen Termin buchen?</summary><p>Nein. Es gibt keinen echten Fahrzeugpflegebetrieb hinter dieser Demo und keine Buchungsfunktion.</p></details>
+<details><summary>Sind die Bilder reale Ergebnisse von NOVA DETAIL?</summary><p>Nein. Es handelt sich um illustrative Stockfotografie. Der interaktive Vorher/Nachher-Regler simuliert ausschließlich unterschiedliche Bildwirkungen.</p></details>
+</div></section>
+<section class="final-cta" id="kontakt"><div class="wrap reveal"><span class="eyebrow">NOVA DETAIL · Konzeptwebsite</span><h2>DEIN<br>AUFTRITT.<br><span class="gold-text">AUF EINEM<br>NEUEN LEVEL.</span></h2><p class="p">Eine visuelle Demonstration, wie eine unverwechselbare Website für einen Premium-Automobilservice aussehen kann.</p><a class="btn gold" href="#start">Zurück zum Anfang <span class="arrow">↑</span></a></div></section>
+</main>
+
+<dialog class="photo-modal" id="photoModal" aria-label="Fotogalerie"><button class="modal-close" id="closePhoto" type="button" aria-label="Galerie schließen">×</button><div class="photo-view"><img id="photoLarge" alt=""><div class="photo-tools"><span id="photoCaption">Fahrzeugpflege · Illustrative Fotografie</span><div class="photo-nav"><button id="prevPhoto" type="button" aria-label="Vorheriges Bild">‹</button><button id="nextPhoto" type="button" aria-label="Nächstes Bild">›</button></div></div></div></dialog>
+<footer class="footer"><div class="wrap"><div class="footer-top"><a class="brand" href="#start">NOVA<span>D E T A I L</span></a><p>Diese Website ist eine fiktive Design-Demonstration. Keine echten Leistungen, keine Kundenergebnisse, keine Buchung, kein aktiver Geschäftsbetrieb. Hero-Motiv: eigenständig generierte Konzeptgrafik; weitere Fotografien: illustrative Stockaufnahmen von Pexels.</p></div><div class="footer-bottom"><span>© 2026 · NOVA DETAIL · DESIGN CONCEPT</span><a href="https://www.pexels.com/" target="_blank" rel="noopener noreferrer">Bildquelle: Pexels ↗</a><span>DESIGNED TO FEEL DIFFERENT.</span></div></div></footer>
+<script>
+(function(){
+const menu=document.getElementById('menu'),links=document.getElementById('navlinks');
+menu.addEventListener('click',()=>{const open=links.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Menü schließen':'Menü öffnen');menu.textContent=open?'×':'☰'});
+links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{links.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Menü öffnen');menu.textContent='☰'}));
+const split=document.getElementById('split'),box=document.getElementById('comparison');
+split.addEventListener('input',()=>box.style.setProperty('--split',split.value+'%'));
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const items=document.querySelectorAll('.reveal');
+if(!reduced&&'IntersectionObserver' in window){const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.09,rootMargin:'0px 0px -35px 0px'});items.forEach(x=>io.observe(x))}else{items.forEach(x=>x.classList.add('in'))}
+if(!reduced&&window.matchMedia('(min-width: 900px)').matches){const bg=document.querySelector('.hero-bg');let queued=false;window.addEventListener('scroll',()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{const y=Math.min(window.scrollY,850);bg.style.translate='0 '+Math.round(y*.14)+'px';queued=false})},{passive:true})}
+})();
+</script>
+
+<script>
+(function(){const items=[...document.querySelectorAll('#galerie .gallery figure')],dlg=document.getElementById('photoModal'),large=document.getElementById('photoLarge'),caption=document.getElementById('photoCaption');let index=0;
+if(!dlg||!items.length||typeof dlg.showModal!=='function')return;
+function render(){const img=items[index].querySelector('img');let url;try{url=new URL(img.currentSrc||img.src);if(url.hostname==='images.pexels.com')url.searchParams.set('w','1800');}catch{url={href:img.src}}large.src=url.href;large.alt=img.alt||'Illustrative Fahrzeugfotografie';caption.textContent=(index+1)+' / '+items.length+'  ·  '+(items[index].querySelector('figcaption')?.textContent||'Design-Demonstration')+'  ·  Stockfotografie'}
+function open(i){index=i;render();dlg.showModal()}
+items.forEach((item,i)=>{item.setAttribute('tabindex','0');item.setAttribute('role','button');item.setAttribute('aria-label','Galeriebild '+(i+1)+' groß ansehen');item.addEventListener('click',()=>open(i));item.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(i)}})});
+document.getElementById('closePhoto').addEventListener('click',()=>dlg.close());document.getElementById('prevPhoto').addEventListener('click',()=>{index=(index+items.length-1)%items.length;render()});document.getElementById('nextPhoto').addEventListener('click',()=>{index=(index+1)%items.length;render()});
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});dlg.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){index=(index+items.length-1)%items.length;render()}if(e.key==='ArrowRight'){index=(index+1)%items.length;render()}});
+})();
+</script>
+
+<script>
+(function(){
+const head=document.querySelector('.sitehead'),hero=document.querySelector('.hero'),ctl=document.getElementById('studioLight'),txt=document.getElementById('studioLightLabel'),meter=document.getElementById('scrollMeter');
+let lit=true,busy=false;
+if(ctl&&hero){ctl.addEventListener('click',()=>{lit=!lit;hero.classList.toggle('lights-off',!lit);ctl.setAttribute('aria-pressed',String(lit));txt.textContent=lit?'Licht dimmen':'Licht aktivieren'})}
+function onScroll(){if(busy)return;busy=true;requestAnimationFrame(()=>{const y=window.scrollY||0;head?.classList.toggle('is-scrolled',y>96);if(meter){const total=Math.max(1,document.documentElement.scrollHeight-innerHeight);meter.style.setProperty('--scroll',Math.min(100,Math.max(0,y/total*100))+'%')}busy=false})}
+window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll,{passive:true});onScroll();
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(hero&&!reduce&&window.matchMedia('(hover: hover) and (pointer: fine)').matches){let mouseBusy=false,px=75,py=57;hero.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect();px=((e.clientX-r.left)/r.width*100).toFixed(1);py=((e.clientY-r.top)/r.height*100).toFixed(1);if(mouseBusy)return;mouseBusy=true;requestAnimationFrame(()=>{hero.style.setProperty('--glow-x',px+'%');hero.style.setProperty('--glow-y',py+'%');mouseBusy=false})},{passive:true})}
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const chapters=[...document.querySelectorAll('[data-chapter]')],sceneImgs=[...document.querySelectorAll('[data-scene]')],sceneIndex=document.getElementById('sceneIndex');
+const labels=['THE SILHOUETTE','THE DETAIL','THE FEELING'];let last=-1;
+function activate(i){if(i===last||i<0||i>2)return;last=i;chapters.forEach((c,j)=>c.classList.toggle('active',j===i));sceneImgs.forEach((c,j)=>c.classList.toggle('active',j===i));sceneIndex.textContent=String(i+1).padStart(2,'0')+' / 03 — '+labels[i]}
+if('IntersectionObserver' in window){
+  const obs=new IntersectionObserver(entries=>{entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio).forEach(e=>activate(Number(e.target.dataset.chapter)))},{rootMargin:'-24% 0px -34% 0px',threshold:0});
+  chapters.forEach(el=>obs.observe(el));
+}
+if(reduced||!window.gsap||!window.ScrollTrigger)return;
+gsap.registerPlugin(ScrollTrigger);
+const intro=gsap.timeline({defaults:{ease:'power3.out'}});
+intro.from('.hero .eyebrow',{y:22,opacity:0,duration:.55})
+.from('.hero h1 .line',{y:75,opacity:0,duration:.95,stagger:.13},'-=.2')
+.from('.hero .hero-tagline',{y:16,opacity:0,duration:.65},'-=.53')
+.from('.hero .intro',{y:16,opacity:0,duration:.6},'-=.49')
+.from('.hero-cta .btn',{y:12,opacity:0,duration:.55,stagger:.09},'-=.36');
+gsap.to('.hero-bg',{yPercent:8,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+gsap.utils.toArray('.service').forEach(el=>{const img=el.querySelector('img');if(img)gsap.from(img,{scale:1.11,duration:1.25,ease:'power2.out',clearProps:'transform',scrollTrigger:{trigger:el,start:'top 90%',once:true}})});
+gsap.from('.visual-statement h2',{y:35,opacity:.22,duration:1.1,ease:'power2.out',scrollTrigger:{trigger:'.visual-statement',start:'top 78%',once:true}});
+gsap.to('.about-media img',{yPercent:-6,ease:'none',scrollTrigger:{trigger:'#philosophie',start:'top bottom',end:'bottom top',scrub:true}});
+})();
+</script>
+
+</body></html>
