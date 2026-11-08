@@ -36,7 +36,7 @@ const fs=require('node:fs');
      if(await page.locator('#navlinks').evaluate(el=>el.classList.contains('open')))throw new Error('Mobile menu did not close on link');
    }
    await page.locator('#erlebnis').scrollIntoViewIfNeeded();
-   await page.locator('[data-chapter="1"]').scrollIntoViewIfNeeded(); await page.waitForTimeout(400);
+   await page.locator('[data-chapter="1"]').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'})); await page.waitForTimeout(650); const sceneCaption=(await page.locator('#sceneIndex').textContent())||''; if(!sceneCaption.includes('02 / 03'))throw new Error('Storyboard image not synced to chapter 02: '+sceneCaption);
    await page.screenshot({path:'qa-screenshots/story-'+width+'.png'});
    const compare=page.locator('#split');await page.locator('#vergleich').scrollIntoViewIfNeeded();
    await compare.evaluate(el=>{el.value='72';el.dispatchEvent(new Event('input',{bubbles:true}))});
