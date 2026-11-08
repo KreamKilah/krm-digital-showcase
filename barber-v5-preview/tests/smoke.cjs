@@ -9,8 +9,10 @@ const fs=require('node:fs');
     const ctx=await browser.newContext({viewport:{width,height:width<=390?844:900},deviceScaleFactor:1,reducedMotion:'reduce'});
     const page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
     try{
-      const resp=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});if(!resp||resp.status()!==200)throw Error('Bad preview HTTP status '+(resp&&resp.status()));
+      const resp=await page.goto(url,{waitUntil:'load',timeout:45000});if(!resp||resp.status()!==200)throw Error('Bad preview HTTP status '+(resp&&resp.status()));
       await page.locator('.hero-title').waitFor({state:'visible',timeout:12000});
+      await page.evaluate(async()=>{await document.fonts.ready;const src='https://kreamkilah.github.io/krm-digital-showcase/assets/vanta-v5-hero.webp';const image=new Image();image.src=src;await image.decode()});
+      await page.waitForTimeout(150);
       const hero=await page.request.get('https://kreamkilah.github.io/krm-digital-showcase/assets/vanta-v5-hero.webp');
       if(hero.status()!==200)throw Error('Original premium hero not loaded: HTTP '+hero.status());
       const inspect=await page.evaluate(()=>{
