@@ -21,7 +21,8 @@ const fs=require('node:fs');
     const img=getComputedStyle(document.querySelector('.hero-bg')).backgroundImage;
     return {overflow:document.documentElement.scrollWidth-innerWidth,heroLeft:h.left,heroRight:h.right,heroVisible:h.width>30&&h.height>50,heroImage:img.includes('nova-hero.webp'),storyExists:!!document.querySelector('#erlebnis .nova-story-grid'),navigationExists:!!document.querySelector('#navlinks')};
    });
-   if(checks.overflow>3)throw new Error('Horizontal overflow '+checks.overflow+'px');
+   await page.screenshot({path:'qa-screenshots/hero-'+width+'.png'});
+   if(checks.overflow>3){const offenders=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(e=>{const r=e.getBoundingClientRect();return {el:e.tagName.toLowerCase(),id:e.id,cls:typeof e.className==='string'?e.className.slice(0,60):'',right:Math.round(r.right),left:Math.round(r.left),scrollWidth:e.scrollWidth,text:(e.innerText||'').slice(0,32)}}).filter(o=>o.right>innerWidth+5&&o.left<innerWidth+60).sort((a,b)=>b.right-a.right).slice(0,14));throw new Error('Horizontal overflow '+checks.overflow+'px offenders='+JSON.stringify(offenders))}
    if(!checks.heroVisible||!checks.heroImage||!checks.storyExists)throw new Error('Missing hero or storyboard');
    await page.screenshot({path:'qa-screenshots/hero-'+width+'.png'});
    const light=page.locator('#studioLight'); await light.click({timeout:10000});
