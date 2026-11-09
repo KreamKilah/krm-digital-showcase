@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const fs=require('node:fs');
 (async()=>{
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-const url='https://kreamkilah.github.io/krm-digital-showcase/vanta-offgrid-preview/?release=06';
+const url='https://kreamkilah.github.io/krm-digital-showcase/vanta-offgrid-preview/?release=07';
 fs.mkdirSync('offgrid-qa',{recursive:true});const results=[];let failed=false;
 for(const width of [360,390,768,1024,1440]){
  const ctx=await browser.newContext({viewport:{width,height:width<=390?844:900},deviceScaleFactor:1,reducedMotion:'reduce'});
