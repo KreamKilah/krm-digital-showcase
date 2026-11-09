@@ -1,0 +1,1 @@
+One-time trigger to install approved KRM DIGITAL logo artwork as permanent repository assets.
