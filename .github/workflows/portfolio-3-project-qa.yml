@@ -1,0 +1,26 @@
+name: KRM Three-Project Portfolio QA
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test KRM project cards and showroom switching
+        run: node portfolio/tests/smoke.cjs
+      - name: Archive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krm-three-projects-qa
+          path: portfolio-qa/
+          retention-days: 7
