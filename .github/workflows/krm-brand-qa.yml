@@ -1,0 +1,28 @@
+name: KRM approved brand visual QA
+on:
+  push:
+    paths:
+      - brand/VERIFY_APPROVED_LOGO.txt
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare browser tests
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Verify KRM approved logos on desktop and mobile
+        run: node brand/tests/smoke.cjs
+      - name: Capture screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krm-official-logo-qa
+          path: brand-qa/
+          retention-days: 7
