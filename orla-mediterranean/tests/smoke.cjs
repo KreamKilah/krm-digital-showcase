@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const fs=require('node:fs');
 (async()=>{
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-const url='https://kreamkilah.github.io/krm-digital-showcase/orla-mediterranean/?qa=01';
+const url='https://kreamkilah.github.io/krm-digital-showcase/orla-mediterranean/?qa=02';
 fs.mkdirSync('orla-qa',{recursive:true});let fail=false;const results=[];
 for(const width of [360,390,768,1024,1440]){
  const ctx=await browser.newContext({viewport:{width,height:width<=390?844:900},deviceScaleFactor:1,reducedMotion:'reduce'});
@@ -33,7 +33,13 @@ for(const width of [360,390,768,1024,1440]){
   await page.locator('#reservePreview').click();if(!await page.locator('#reservationModal').evaluate(el=>el.open))throw Error('Reservation preview modal did not open');
   const modalSummary=await page.locator('#modalSummary').textContent();if(!modalSummary.includes('4 Personen')||!modalSummary.includes('DEMO ONLY'))throw Error('Modal lacks demo summary');
   await page.locator('#closeModal').click();if(await page.locator('#reservationModal').evaluate(el=>el.open))throw Error('Modal failed to close');
-  const pictures=await page.evaluate(()=>[...document.querySelectorAll('img')].map(img=>({src:img.currentSrc||img.src,ok:img.complete&&img.naturalWidth>0,naturalWidth:img.naturalWidth,loading:img.loading})));
+  const pictures=await page.evaluate(async()=>{
+   const imgs=[...document.querySelectorAll('img')];
+   return Promise.all(imgs.map(async img=>{
+     img.loading='eager';try{await Promise.race([img.decode(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('decode timeout')),14000))])}catch(e){}
+     return {src:img.currentSrc||img.src,ok:img.complete&&img.naturalWidth>0,naturalWidth:img.naturalWidth,loading:img.loading};
+   }));
+  });
   const failedImages=pictures.filter(x=>!x.ok);if(failedImages.length)throw Error('Broken/unloaded images '+JSON.stringify(failedImages.slice(0,9)));
   if(errors.length)throw Error('Page JS errors '+errors.join(';'));
   results.push({width,pass:true,layout,images:pictures.length,menu:'pass',booking:'pass',errors});
