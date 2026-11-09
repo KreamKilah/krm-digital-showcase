@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const fs=require('node:fs');
 (async()=>{
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-const url='https://kreamkilah.github.io/krm-digital-showcase/vanta-offgrid-preview/?release=05';
+const url='https://kreamkilah.github.io/krm-digital-showcase/vanta-offgrid-preview/?release=06';
 fs.mkdirSync('offgrid-qa',{recursive:true});const results=[];let failed=false;
 for(const width of [360,390,768,1024,1440]){
  const ctx=await browser.newContext({viewport:{width,height:width<=390?844:900},deviceScaleFactor:1,reducedMotion:'reduce'});
@@ -48,7 +48,8 @@ for(const width of [360,390,768,1024,1440]){
   if(errors.length)throw Error('JS errors '+errors.join(' / '));
   results.push({width,pass:true,checks,ticket:booked,errors});
  }catch(e){failed=true;const offenders=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,70):'',right:Math.round(r.right),left:Math.round(r.left)}}).filter(r=>r.right>innerWidth+3&&r.left<innerWidth+45).slice(0,15)).catch(()=>[]);const diagnostics=await page.evaluate(()=>{const selectors=['html','body','.hero','.hero-grid','.hero-copy','.hero-title','.hero-composition','.poster','.corner-label','.marquee','.marquee-inner','.footer','.footer-wordmark','.footer-grid','.price-grid','.ticket-builder','.ticket-preview','.editorial-grid'];return selectors.map(sel=>{const el=document.querySelector(sel);if(!el)return {sel,missing:true};const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return {sel,left:Math.round(r.left),right:Math.round(r.right),client:el.clientWidth,scroll:el.scrollWidth,font:cs.fontSize,overflow:cs.overflowX}}) }).catch(()=>[]);
-      results.push({width,pass:false,error:e.message,offenders,diagnostics,errors})}
+      const wide=await page.evaluate(()=>[...document.querySelectorAll('body *')].filter(el=>el.scrollWidth>el.clientWidth+5).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,55):'',text:(el.textContent||'').trim().slice(0,36),left:Math.round(r.left),right:Math.round(r.right),client:el.clientWidth,scroll:el.scrollWidth,delta:el.scrollWidth-el.clientWidth,overflow:getComputedStyle(el).overflowX}}).sort((a,b)=>b.delta-a.delta).slice(0,27)).catch(()=>[]);
+      results.push({width,pass:false,error:e.message,offenders,diagnostics,wide,errors})}
  await ctx.close();
 }
 await browser.close();fs.writeFileSync('offgrid-qa/report.json',JSON.stringify(results,null,2));
