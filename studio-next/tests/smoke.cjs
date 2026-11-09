@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const fs=require('node:fs');
 (async()=>{
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-const url='https://kreamkilah.github.io/krm-digital-showcase/studio-next/?krm=qa1';
+const url='https://kreamkilah.github.io/krm-digital-showcase/studio-next/?krm=qa2';
 fs.mkdirSync('next-qa',{recursive:true});let fail=false;const results=[];
 for(const width of [360,390,768,1024,1440]){
  const ctx=await browser.newContext({viewport:{width,height:width<=390?844:900},deviceScaleFactor:1,reducedMotion:'reduce'});
