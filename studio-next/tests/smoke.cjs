@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const fs=require('node:fs');
 (async()=>{
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-const url='https://kreamkilah.github.io/krm-digital-showcase/studio-next/?krm=qa2';
+const url='https://kreamkilah.github.io/krm-digital-showcase/?release=krm-next-629d77-final';
 fs.mkdirSync('next-qa',{recursive:true});let fail=false;const results=[];
 for(const width of [360,390,768,1024,1440]){
  const ctx=await browser.newContext({viewport:{width,height:width<=390?844:900},deviceScaleFactor:1,reducedMotion:'reduce'});
@@ -21,6 +21,9 @@ for(const width of [360,390,768,1024,1440]){
   if(layout.lines.some(x=>x.left< -2||x.right>width+3))throw Error('Hero title clipping '+JSON.stringify(layout.lines));
   const projects=page.locator('.work .project');const titles=await projects.locator('h3').allTextContents();
   if(titles.length!==3||!titles[0].includes('NOVA')||!titles[1].includes('VANTA')||!titles[2].includes('orla'))throw Error('Three project identities missing '+JSON.stringify(titles));
+  if(width>=1024){const panels=await page.evaluate(()=>['.project-vanta .project-info','.project-orla .project-info'].map(sel=>{const el=document.querySelector(sel),c=getComputedStyle(el);return {sel,background:c.backgroundColor,border:c.borderTopWidth,width:Math.round(el.getBoundingClientRect().width)}}));
+    if(panels.some(p=>p.background==='rgba(0, 0, 0, 0)'||p.border==='0px'))throw Error('Desktop project description not legible on opaque editorial panel: '+JSON.stringify(panels));}
+  
   await page.locator('.project-vanta').scrollIntoViewIfNeeded();await page.screenshot({path:'next-qa/vanta-'+width+'.png'});
   await page.locator('.project-orla').scrollIntoViewIfNeeded();await page.screenshot({path:'next-qa/orla-'+width+'.png'});
   if(width<=900){await page.locator('#menuButton').click();if(await page.locator('#menuButton').getAttribute('aria-expanded')!=='true')throw Error('Mobile menu not open');await page.locator('#mainLinks a[href="#lab"]').click();if(await page.locator('#menuButton').getAttribute('aria-expanded')!=='false')throw Error('Mobile menu did not close')}
