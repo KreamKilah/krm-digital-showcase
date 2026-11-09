@@ -1,0 +1,62 @@
+name: KRM brand source image automatic import
+on:
+  push:
+    paths:
+      - brand/IMPORT_v1.txt
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install imaging dependencies
+        run: python -m pip install --quiet Pillow requests
+      - name: Import approved logo variants
+        env:
+          HORIZONTAL_URL: 'https://media.canva.com/v2/image-resize/format:PNG/height:54/quality:100/uri:ifs%3A%2F%2FM%2F0736dc83-23cf-49b6-8d7b-702033af2192/watermark:F/width:200?csig=AAAAAAAAAAAAAAAAAAAAALuMm-7lXbSioPitvWjpsV0XcVV_ZJmZAP7qBl8MZXYG&exp=1794242662&osig=AAAAAAAAAAAAAAAAAAAAAOAjeY7lwxP-a_xUWQZUeVYjfrt3TPq9v8E5K9TLzeE4&signer=media-rpc&token=AAIAAU0AJDA3MzZkYzgzLTIzY2YtNDliNi04ZDdiLTcwMjAzM2FmMjE5MgAAAAABocEyTnDh8PytXiIRCijkONM8QjU9sL25ajSpkAphchW-P0pqnQ&x-canva-quality=thumbnail'
+          PRINCIPAL_URL: 'https://media.canva.com/v2/image-resize/format:PNG/height:137/quality:100/uri:ifs%3A%2F%2FM%2F44e886dc-5462-4a64-a573-17d533829f41/watermark:F/width:200?csig=AAAAAAAAAAAAAAAAAAAAALvzfxuh2saXKhysHdJGzWPClIERA8k7bXQOEs--XFe0&exp=1794241962&osig=AAAAAAAAAAAAAAAAAAAAAKutaBp7KxbqpSZl34hEI6yyeyKsP_qbrK9p1ehz-QsS&signer=media-rpc&token=AAIAAU0AJDQ0ZTg4NmRjLTU0NjItNGE2NC1hNTczLTE3ZDUzMzgyOWY0MQAAAAABocEnoBCigMTP-tEYwVk0A_3UujL1n4DmdcS4B_Ds8Vd4qxQewA&x-canva-quality=thumbnail'
+          AVATAR_URL: 'https://media.canva.com/v2/image-resize/format:PNG/height:200/quality:100/uri:ifs%3A%2F%2FM%2F79ae8dfb-6966-44bb-b28f-f288b049448b/watermark:F/width:200?csig=AAAAAAAAAAAAAAAAAAAAAByHQYw9Vwi4RWtNz8DQf-TjO0AejgOjZ5NvrDVgxag0&exp=1794242742&osig=AAAAAAAAAAAAAAAAAAAAANaPjFMfgdTQnzD-NPm4ajLB__UNc4e4KLWyyTVhuLx3&signer=media-rpc&token=AAIAAU0AJDc5YWU4ZGZiLTY5NjYtNDRiYi1iMjhmLWYyODhiMDQ5NDQ4YgAAAAABocEzhvDJhGQSkRqfEpOidF1yT2o8Jc_VOLpUetnkygVjPPAuWw&x-canva-quality=thumbnail'
+        run: |
+          python - <<'PY'
+          import os,requests,re,io
+          from PIL import Image
+          os.makedirs('brand',exist_ok=True)
+          for key in ('horizontal','principal','avatar'):
+              url=os.environ[key.upper()+'_URL']
+              variants=[]
+              m=re.search(r'/height:(\d+)/',url)
+              n=re.search(r'/width:(\d+)',url)
+              if m and n:
+                  targets={'horizontal':(1861,510),'principal':(1187,817),'avatar':(512,512)}
+                  w,h=targets[key]
+                  new=url.replace('/height:'+m.group(1)+'/','/height:'+str(h)+'/').replace('/width:'+n.group(1),'/width:'+str(w))
+                  if new!=url:variants.append(new)
+              variants.append(url)
+              im=None
+              for index,source in enumerate(variants):
+                  try:
+                      response=requests.get(source,timeout=45)
+                      response.raise_for_status()
+                      candidate=Image.open(io.BytesIO(response.content))
+                      candidate.load()
+                      if candidate.width<100:raise RuntimeError('Too small')
+                      im=candidate.convert('RGBA')
+                      print(key,'source',index,'size',im.size)
+                      break
+                  except Exception as e:print(key,'source',index,'unavailable:',str(e)[:80])
+              if im is None:raise RuntimeError('Could not import '+key)
+              if key=='avatar':
+                  im.save('brand/krm-avatar.png',optimize=True)
+                  im.save('brand/favicon.ico',format='ICO',sizes=[(16,16),(32,32),(48,48),(64,64)])
+              else:
+                  im.save('brand/krm-'+key+'.webp','WEBP',quality=92,method=6)
+          PY
+      - name: Commit permanent web logos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add brand/krm-horizontal.webp brand/krm-principal.webp brand/krm-avatar.png brand/favicon.ico
+          git commit -m "Install approved KRM DIGITAL brand images" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
