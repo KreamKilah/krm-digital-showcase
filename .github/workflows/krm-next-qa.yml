@@ -1,0 +1,26 @@
+name: KRM NEXT Portfolio QA
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test KRM NEXT five screen sizes and interactions
+        run: node studio-next/tests/smoke.cjs
+      - name: Archive screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krm-next-visual-qa
+          path: next-qa/
+          retention-days: 7
