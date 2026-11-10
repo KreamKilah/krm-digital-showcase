@@ -1,0 +1,53 @@
+name: KRM Private Client Portal Security CI
+on:
+  push:
+    paths:
+      - 'client-portal/**'
+      - '.github/workflows/krm-private-portal-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  security-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: krm_test
+          POSTGRES_PASSWORD: krm_test_password
+          POSTGRES_DB: krm_portal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U krm_test -d krm_portal_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    defaults:
+      run:
+        working-directory: client-portal
+    env:
+      NODE_ENV: test
+      APP_ORIGIN: http://127.0.0.1:39121
+      LAUNCH_ENABLED: 'false'
+      DATABASE_URL: postgresql://krm_test:krm_test_password@127.0.0.1:5432/krm_portal_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install exact runtime dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Check JavaScript syntax
+        run: |
+          node --check src/server.mjs
+          node --check src/app.mjs
+          node --check src/security.mjs
+          node --check public/app.js
+          node --check scripts/migrate.mjs
+          node --check scripts/create-admin.mjs
+      - name: Apply schema to isolated ephemeral PostgreSQL
+        run: npm run db:migrate
+      - name: Run authorization and auth integration tests
+        run: npm test
