@@ -39,7 +39,7 @@ for(const width of [390,1440]){
   if(!await page.locator('#feature-project').innerText().then(x=>x.includes('Atelier Client')))throw Error('Client project missing');
   await page.screenshot({path:'qa-private/client-dashboard-'+width+'.png'});
   await page.locator('[data-view=projects]').click();
-  if(!(await page.locator('#page-projects').innerText()).includes('Mobile layout'))throw Error('Project milestone missing');
+  if(!(await page.locator('#view-projects').innerText()).includes('Mobile layout'))throw Error('Project milestone missing');
   await page.locator('[data-view=updates]').click();
   await page.locator('#comment-body').fill('<svg onload=alert(1)> Bitte den Header vergrößern.');
   await page.locator('#comment-form button[type=submit]').click();
@@ -50,7 +50,7 @@ for(const width of [390,1440]){
   const approvals=page.locator('.approval-actions button');
   if(!await approvals.count())throw Error('Pending client approval not visible');
   await approvals.first().click();
-  if(!(await page.locator('#approval-list').innerText()).includes('Aprovado'))throw Error('Approval not registered');
+  await page.waitForFunction(()=>document.querySelector('#approval-list')?.textContent?.includes('Aprovado'),{timeout:12000});
   await page.locator('#signout').click();
   await page.locator('#auth-screen').waitFor({state:'visible'});
   await signIn(page,'admin@krm.test');
@@ -64,7 +64,17 @@ for(const width of [390,1440]){
   await page.screenshot({path:'qa-private/admin-'+width+'.png'});
   if(errors.length)throw Error('Client portal JS errors '+errors.join(' / '));
   results.push({width,pass:true,widthReport,adminProjectCount:count});
- }catch(e){failed=true;results.push({width,pass:false,error:e.message,errors})}
+ }catch(e){
+  failed=true;
+  const wide=await page.evaluate(()=>{
+   const w=innerWidth;
+   return [...document.querySelectorAll('body *')].map(el=>{
+    const b=el.getBoundingClientRect();const css=getComputedStyle(el);
+    return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,60):'',id:el.id,left:Math.round(b.left),right:Math.round(b.right),client:el.clientWidth,scroll:el.scrollWidth,overflow:css.overflowX}
+   }).filter(x=>x.right>w+3&&x.left<w+70).sort((a,b)=>b.right-a.right).slice(0,20);
+  }).catch(()=>[]);
+  results.push({width,pass:false,error:e.message,errors,wide})
+ }
  await context.close();
 }
 await browser.close();await new Promise(resolve=>server.close(resolve));await db.end();
