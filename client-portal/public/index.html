@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111d16">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>KRM DIGITAL — Client Space</title>
+<link rel="stylesheet" href="/styles.css">
+<script src="/app.js" type="module" defer></script>
+</head>
+<body>
+<div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+
+<main id="auth-screen" class="auth">
+ <div class="auth-banner">
+  <div class="wordmark">KRM<span>✦</span> DIGITAL</div>
+  <div class="auth-graphic">YOUR<br>PROJECT.<br><em>YOUR SPACE.</em></div>
+  <p>Acompanhar o teu website, partilhar feedback e aprovar cada fase. Um espaço organizado para cada cliente.</p>
+  <div class="auth-foot">KRM / CLIENT SPACE <span>PRIVATE EXPERIENCE</span></div>
+ </div>
+ <div class="auth-form-column">
+  <div class="auth-top">ACESSO PRIVADO <span>01 / 02</span></div>
+  <section id="login-panel" aria-labelledby="login-title" class="auth-panel">
+   <div class="eyebrow">BEM-VINDO</div>
+   <h1 id="login-title">Entrar na tua área.</h1>
+   <p>Inicia sessão com as credenciais criadas pela KRM DIGITAL.</p>
+   <form id="login-form">
+    <label for="login-email">Email</label><input type="email" id="login-email" autocomplete="username" required maxlength="254" placeholder="email@exemplo.com">
+    <label for="login-password">Palavra-passe</label><input type="password" id="login-password" autocomplete="current-password" required placeholder="A tua palavra-passe">
+    <button class="primary" type="submit">Entrar <span>↗</span></button>
+   </form>
+   <div class="auth-note">Acesso apenas por convite. Ainda não existem inscrições públicas nem recuperação automática de palavra-passe.</div>
+  </section>
+  <section id="invite-panel" aria-labelledby="invite-title" class="auth-panel" hidden>
+   <div class="eyebrow">CONVITE EXCLUSIVO</div>
+   <h1 id="invite-title">Criar acesso.</h1>
+   <p>Recebeste um convite para acompanhar um projeto KRM DIGITAL. O convite é válido uma única vez.</p>
+   <form id="invite-form">
+    <label for="invite-name">Nome</label><input id="invite-name" required maxlength="120" autocomplete="name">
+    <label for="invite-password">Escolher palavra-passe</label><input id="invite-password" type="password" required minlength="12" maxlength="128" autocomplete="new-password">
+    <p class="small">Usa pelo menos 12 caracteres. O convite não pode ser reutilizado.</p>
+    <button class="primary" type="submit">Criar conta <span>↗</span></button>
+   </form>
+  </section>
+  <div class="brand-note">© KRM DIGITAL · ACESSO CONFIDENCIAL</div>
+ </div>
+</main>
+
+<div id="app-screen" class="workspace" hidden>
+ <aside class="sidebar">
+  <a href="/" class="wordmark" aria-label="KRM DIGITAL">KRM<span>✦</span> DIGITAL</a>
+  <div class="sidecaption">CLIENT SPACE / WORKSPACE</div>
+  <div class="navcaption">WORKSPACE</div>
+  <nav aria-label="Navegação" class="nav">
+   <button type="button" data-view="overview" class="active">◫ <span>Visão geral</span></button>
+   <button type="button" data-view="projects">▤ <span>Projetos</span></button>
+   <button type="button" data-view="updates">✎ <span>Comentários</span></button>
+   <button type="button" data-view="approvals">✓ <span>Aprovações</span></button>
+   <button type="button" data-view="files">▣ <span>Ficheiros</span></button>
+  </nav>
+  <div class="side-grow"></div>
+  <div class="sidebar-help"><div class="eyebrow">SUPORTE</div><p>Os teus projetos e dados estão separados dos restantes clientes.</p><small>Sem pagamentos ou uploads nesta fase.</small></div>
+  <div class="userbox"><span class="avatar" id="avatar">K</span><div><strong id="account-name">Conta</strong><small id="account-role">CLIENTE</small></div></div>
+ </aside>
+ <div class="rightpane">
+  <header class="topbar">
+   <span class="crumb">KRM DIGITAL <b>/</b> CLIENT SPACE <b>/</b> <span id="crumb-view">DASHBOARD</span></span>
+   <div class="topright"><span class="online"><i></i> Sessão protegida</span><button id="signout" type="button">Sair ↗</button></div>
+  </header>
+  <div class="mainwrap">
+   <div class="introline"><div><div class="eyebrow">UM ESPAÇO PARA O TEU PROJETO</div><h1 id="workspace-title">O teu projeto, num só lugar.</h1><p id="workspace-intro">Todas as etapas, decisões e atualizações organizadas.</p></div><span class="portal-version">KRM PORTAL <b>01</b></span></div>
+   <section id="view-overview" class="view">
+    <div class="stats">
+     <div class="stat"><span>Projetos</span><strong id="stat-projects">—</strong><small>Projetos acessíveis</small></div>
+     <div class="stat"><span>Progresso</span><strong id="stat-progress">—</strong><small>Do projeto selecionado</small></div>
+     <div class="stat"><span>Conta</span><strong id="stat-role">—</strong><small>Perfil de acesso</small></div>
+    </div>
+    <div class="two-col">
+     <article class="panel feature"><div class="eyebrow">O TEU PROJETO</div><div id="feature-project"><h2>Sem projetos atribuídos.</h2><p>Quando o administrador adicionar o teu projeto, vais vê-lo aqui.</p></div></article>
+     <article class="panel"><div class="panelhead"><h2>Como funciona</h2><span>01 — 04</span></div><div class="how"><div><strong>01</strong><p>Briefing & objetivos</p></div><div><strong>02</strong><p>Identidade & design</p></div><div><strong>03</strong><p>Desenvolvimento & feedback</p></div><div><strong>04</strong><p>Revisão & aprovação</p></div></div></article>
+    </div>
+   </section>
+   <section id="view-projects" class="view" hidden>
+    <div class="panel"><div class="panelhead"><h2>Os teus projetos</h2><span id="project-count">0 projetos</span></div><div id="project-list" class="project-list"></div></div>
+    <div class="panel detail" id="project-detail" hidden>
+     <div class="panelhead"><h2 id="detail-title">Projeto</h2><span class="chip" id="detail-stage">BRIEFING</span></div>
+     <p id="detail-summary" class="bodycopy"></p>
+     <div class="progressline"><span>Progresso atual</span><b id="detail-progress">0%</b></div>
+     <div class="progress-track"><span id="detail-bar"></span></div>
+     <div class="section-divider"></div><h3>Etapas</h3><div id="milestone-list" class="milestones"></div>
+     <div id="detail-link-wrap" class="preview-link" hidden><a id="detail-link" target="_blank" rel="noopener noreferrer">Ver website em desenvolvimento ↗</a></div>
+    </div>
+   </section>
+   <section id="view-updates" class="view" hidden>
+    <div class="two-col">
+     <article class="panel"><div class="panelhead"><h2>Comentários do projeto</h2><span>COLABORAÇÃO</span></div><div id="comment-list" class="comments"></div>
+      <form id="comment-form" class="formblock"><label for="comment-body">Enviar pedido de alteração</label><textarea id="comment-body" maxlength="2000" required rows="5" placeholder="Descreve a alteração e indica a secção da página…"></textarea><div class="formfoot"><small>A mensagem é enviada apenas para o projeto selecionado.</small><button class="primary" type="submit">Publicar comentário ↗</button></div></form>
+     </article>
+     <article class="panel tip"><div class="eyebrow">FEEDBACK EFICIENTE</div><h2>Uma alteração de cada vez.</h2><p>Indica o que queres mudar, onde está e qual seria o resultado esperado. Fica tudo ligado ao projeto.</p></article>
+    </div>
+   </section>
+   <section id="view-approvals" class="view" hidden>
+    <article class="panel"><div class="panelhead"><h2>Pedidos de aprovação</h2><span>CONTROLO DE VERSÕES</span></div><p class="bodycopy">A aprovação regista a tua decisão no projeto. Não constitui assinatura de contrato ou aceite de pagamento.</p><div id="approval-list" class="approvals"></div></article>
+   </section>
+   <section id="view-files" class="view" hidden>
+    <article class="panel"><div class="eyebrow">ENTREGA SEGURA</div><h2>Ficheiros e documentos</h2><p class="bodycopy">Esta área será ligada a armazenamento privado, com permissões por projeto. Uploads, faturas e pagamentos estão desativados até concluirmos a segurança e o controlo de acessos.</p></article>
+   </section>
+   <section id="view-admin" class="view" hidden>
+    <div class="two-col">
+     <article class="panel"><div class="panelhead"><h2>Novo projeto</h2><span>ADMIN</span></div><form id="create-project" class="formblock">
+      <label for="new-title">Nome do projeto</label><input id="new-title" required maxlength="120" placeholder="Website Atelier Nord">
+      <label for="new-summary">Descrição</label><textarea id="new-summary" maxlength="2000" rows="3" placeholder="Objetivos e entregas"></textarea>
+      <label for="new-preview">URL de pré-visualização (HTTPS)</label><input id="new-preview" type="url" placeholder="https://...">
+      <button class="primary" type="submit">Criar projeto ↗</button>
+     </form></article>
+     <article class="panel"><div class="panelhead"><h2>Convidar cliente</h2><span>ADMIN</span></div><form id="invite-customer" class="formblock">
+      <label for="client-email">Email do cliente</label><input id="client-email" type="email" required maxlength="254">
+      <p class="bodycopy">O convite pertence ao projeto atualmente selecionado e expira após 48 horas. Partilha o link apenas com o destinatário.</p><button class="primary" type="submit">Gerar convite privado ↗</button>
+     </form><div id="invite-result" class="invite-result" hidden><label for="invite-link">Link de convite (mostrado apenas agora)</label><input readonly id="invite-link"><button id="copy-invite" type="button">Copiar convite</button></div></article>
+     <article class="panel"><div class="panelhead"><h2>Atualizar projeto</h2><span>ADMIN</span></div><form id="update-project" class="formblock">
+      <label for="stage">Etapa atual</label><select id="stage"><option value="briefing">Briefing</option><option value="design">Design</option><option value="development">Desenvolvimento</option><option value="review">Revisão</option><option value="delivered">Entregue</option></select>
+      <label for="progress">Progresso (0-100%)</label><input id="progress" type="number" min="0" max="100" value="0" required>
+      <label for="update-preview">Preview (HTTPS)</label><input id="update-preview" type="url" placeholder="https://...">
+      <button class="primary" type="submit">Guardar alterações ↗</button>
+     </form></article>
+     <article class="panel"><div class="panelhead"><h2>Novas etapas & aprovações</h2><span>ADMIN</span></div>
+      <form id="new-milestone" class="formblock"><label for="milestone-title">Nome da etapa</label><input id="milestone-title" maxlength="130" required placeholder="Ajustar versão mobile"><button class="primary" type="submit">Adicionar etapa ↗</button></form>
+      <div class="section-divider"></div><form id="request-approval" class="formblock"><label for="approval-version">Versão para aprovação</label><input id="approval-version" maxlength="80" required placeholder="Design V1.3"><button class="primary" type="submit">Pedir aprovação ↗</button></form>
+     </article>
+    </div>
+   </section>
+  </div>
+ </div>
+</div>
+</body>
+</html>
