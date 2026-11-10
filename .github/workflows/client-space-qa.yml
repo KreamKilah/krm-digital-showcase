@@ -1,0 +1,26 @@
+name: KRM Client Space UX smoke QA
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Check responsive client space and safe demo interactions
+        run: node client-space-demo/tests/smoke.cjs
+      - name: Upload screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krm-client-space-qa
+          path: qa-client-space/
+          retention-days: 7
