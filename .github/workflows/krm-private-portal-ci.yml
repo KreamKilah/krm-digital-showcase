@@ -51,3 +51,16 @@ jobs:
         run: npm run db:migrate
       - name: Run authorization and auth integration tests
         run: npm test
+      - name: Install Chromium UI test runtime
+        run: |
+          npm install --no-save playwright --ignore-scripts --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Test protected client and admin browser workflows
+        run: node tests/ui.browser.mjs
+      - name: Preserve UI evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krm-private-portal-ui-evidence
+          path: client-portal/qa-private/
+          retention-days: 7
