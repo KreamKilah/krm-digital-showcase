@@ -8,12 +8,12 @@ const base='http://localhost:39131',pass='StrongBrowserPassphrase!2026';
 const db=new pg.Pool({connectionString:process.env.DATABASE_URL,max:6});
 await db.query('TRUNCATE audit_events,login_failures,invitations,approvals,comments,milestones,project_members,projects,sessions,users RESTART IDENTITY CASCADE');
 const admin=uuid(),customer=uuid(),project=uuid(),approval=uuid(),hash=await hashPassword(pass);
-await db.query("INSERT INTO users(id,email,display_name,role,password_hash) VALUES($1,'admin@krm.test','KRM Admin','admin',$4),($2,'customer@krm.test','Demo Client','client',$4)",[admin,customer,null,hash]);
+await db.query("INSERT INTO users(id,email,display_name,role,password_hash) VALUES($1,'admin@krm.test','KRM Admin','admin',$3),($2,'customer@krm.test','Demo Client','client',$3)",[admin,customer,hash]);
 await db.query("INSERT INTO projects(id,title,summary,stage,progress,preview_url) VALUES($1,'Atelier Client','Website redesign','design',42,'https://example.com')",[project]);
 await db.query('INSERT INTO project_members(project_id,user_id) VALUES($1,$2)',[project,customer]);
 await db.query("INSERT INTO approvals(id,project_id,version_label,requested_by) VALUES($1,$2,'Design 1.0',$3)",[approval,project,admin]);
 await db.query("INSERT INTO milestones(id,project_id,title,status,position) VALUES($1,$2,'Mobile layout','active',1)",[uuid(),project]);
-const server=createApp(db,{origin:base,production:false}).listen(39131,'127.0.0.1');
+const server=createApp(db,{origin:base,production:false}).listen(39131);
 await new Promise(resolve=>server.once('listening',resolve));
 await mkdir('qa-private',{recursive:true});
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
@@ -25,6 +25,7 @@ async function signIn(page,email){
  await page.locator('#app-screen').waitFor({state:'visible',timeout:13000});
 }
 for(const width of [390,1440]){
+ await db.query("UPDATE approvals SET status='pending',decided_by=NULL,decided_at=NULL WHERE id=$1",[approval]);
  const context=await browser.newContext({viewport:{width,height:width===390?844:900},deviceScaleFactor:1,reducedMotion:'reduce'});
  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  try{
@@ -57,7 +58,7 @@ for(const width of [390,1440]){
   await page.locator('#new-title').fill('Website Design Test');
   await page.locator('#new-summary').fill('Scope and roadmap');
   await page.locator('#create-project button[type=submit]').click();
-  await page.locator('#stat-projects').waitFor();
+  await page.waitForFunction(()=>Number(document.querySelector('#stat-projects').textContent)>=2,{timeout:12000});
   const count=Number((await page.locator('#stat-projects').textContent()).trim());
   if(count<2)throw Error('Admin project not created');
   await page.screenshot({path:'qa-private/admin-'+width+'.png'});
