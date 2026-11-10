@@ -174,9 +174,9 @@ $('#comment-form').addEventListener('submit',event=>{
  });
 });
 $('#create-project').addEventListener('submit',event=>{
- event.preventDefault();submit(event.currentTarget,async()=>{
+ event.preventDefault();const form=event.currentTarget;submit(form,async()=>{
   await request('/admin/projects',{method:'POST',body:{title:$('#new-title').value,summary:$('#new-summary').value,previewUrl:$('#new-preview').value||null}});
-  event.currentTarget.reset();await loadProjects();showNotice('Projeto criado.');
+  form.reset();await loadProjects();showNotice('Projeto criado.');
  });
 });
 $('#invite-customer').addEventListener('submit',event=>{
@@ -195,17 +195,17 @@ $('#update-project').addEventListener('submit',event=>{
  });
 });
 $('#new-milestone').addEventListener('submit',event=>{
- event.preventDefault();submit(event.currentTarget,async()=>{
+ event.preventDefault();const form=event.currentTarget;submit(form,async()=>{
   if(!selectedId)throw Error('Seleciona um projeto.');
   await request('/admin/projects/'+encodeURIComponent(selectedId)+'/milestones',{method:'POST',body:{title:$('#milestone-title').value}});
-  event.currentTarget.reset();await selectProject(selectedId,false);showNotice('Etapa adicionada.');
+  form.reset();await selectProject(selectedId,false);showNotice('Etapa adicionada.');
  });
 });
 $('#request-approval').addEventListener('submit',event=>{
- event.preventDefault();submit(event.currentTarget,async()=>{
+ event.preventDefault();const form=event.currentTarget;submit(form,async()=>{
   if(!selectedId)throw Error('Seleciona um projeto.');
   await request('/admin/projects/'+encodeURIComponent(selectedId)+'/approvals',{method:'POST',body:{version:$('#approval-version').value}});
-  event.currentTarget.reset();await selectProject(selectedId,false);showNotice('Pedido de aprovação criado.');
+  form.reset();await selectProject(selectedId,false);showNotice('Pedido de aprovação criado.');
  });
 });
 (async function init(){
