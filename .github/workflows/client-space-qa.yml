@@ -1,5 +1,9 @@
 name: KRM Client Space UX smoke QA
 on:
+  push:
+    paths:
+      - 'client-space-demo/**'
+      - '.github/workflows/client-space-qa.yml'
   workflow_dispatch:
 permissions:
   contents: read
