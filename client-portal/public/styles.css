@@ -82,3 +82,11 @@ html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--te
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 @media(max-width:900px){.workspace{grid-template-columns:minmax(0,1fr)}.sidebar{min-width:0;max-width:100%;overflow:hidden}.sidebar .nav{min-width:0;max-width:100%;overflow-x:auto}}
+
+/* Mobile navigation: all five client areas remain discoverable without horizontal swiping. */
+@media(max-width:570px){
+ .sidebar{gap:11px}
+ .sidebar .nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;overflow:visible;width:100%;max-width:100%}
+ .sidebar .nav button{min-width:0;width:100%;white-space:normal;justify-content:flex-start;font-size:11px;padding:10px 12px}
+ .sidebar .nav button span{min-width:0}
+}
