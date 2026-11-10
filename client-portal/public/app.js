@@ -22,6 +22,10 @@ async function request(endpoint,{method='GET',body}={}){
 }
 function showAuth(){
  $('#auth-screen').hidden=false;$('#app-screen').hidden=true;me=null;csrf='';projects=[];selectedId=null;detail=null;
+ for(const id of ['#project-list','#milestone-list','#comment-list','#approval-list','#feature-project']){const element=$(id);if(element)element.replaceChildren()}
+ for(const id of ['#detail-title','#detail-summary','#account-name','#account-role','#approvalState']){const element=$(id);if(element)element.textContent=''}
+ for(const id of ['#login-password','#comment-body','#invite-password','#invite-link']){const element=$(id);if(element)element.value=''}
+ $('#invite-result').hidden=true;$('#project-detail').hidden=true;
 }
 function showInvite(token){
  invitationToken=token;$('#auth-screen').hidden=false;$('#app-screen').hidden=true;
