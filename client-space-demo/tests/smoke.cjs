@@ -23,7 +23,7 @@ for(const width of [360,390,768,1440]){
   if(await posts.count()!==3)throw Error('Local demo feedback not appended');
   if(!(await posts.last().innerText()).includes('Ich möchte den Header ändern'))throw Error('Feedback content missing');
   if(await page.locator('body').getAttribute('data-xss'))throw Error('Unsafe feedback escaped incorrectly');
-  if((await page.locator('#toast').textContent()).includes('gesendet')===false)throw Error('No local-only feedback confirmation');
+  if(!(await page.locator('#toast').textContent()).includes('nichts wurde versendet oder gespeichert'))throw Error('No local-only feedback confirmation');
   await page.screenshot({path:'qa-client-space/feedback-'+width+'.png'});
   await page.locator('[data-page=dateien]').click();if(!await page.locator('#page-dateien').isVisible())throw Error('Files tab failed');
   const link=await page.locator('.file-row a').first().getAttribute('href');if(!link.includes('vanta-offgrid-preview'))throw Error('Wrong preview file link');
