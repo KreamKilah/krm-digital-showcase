@@ -33,6 +33,10 @@ for(const width of [390,1440]){
   if(response.status()!==200)throw Error('HTTP '+response.status());
   await page.locator('#auth-screen').waitFor({state:'visible'});
   await signIn(page,'customer@krm.test');
+  if(width===390){
+   const navVisible=await page.locator('[data-view=updates]').isVisible();
+   if(!navVisible)throw Error('Mobile comments navigation is not discoverable');
+  }
   if(await page.locator('[data-view=admin]').count())throw Error('Admin nav visible to client');
   const widthReport=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,panels:document.querySelectorAll('.view:not([hidden])').length}));
   if(widthReport.scrollWidth>width+3)throw Error('Overflow '+(widthReport.scrollWidth-width));
@@ -53,6 +57,8 @@ for(const width of [390,1440]){
   await page.waitForFunction(()=>document.querySelector('#approval-list')?.textContent?.includes('Aprovado'),{timeout:12000});
   await page.locator('#signout').click();
   await page.locator('#auth-screen').waitFor({state:'visible'});
+  if(await page.locator('#comment-list').locator('.comment').count())throw Error('Private comments remained in DOM after logout');
+  if((await page.locator('#feature-project').textContent()).trim())throw Error('Private project title remained in DOM after logout');
   await signIn(page,'admin@krm.test');
   await page.locator('[data-view=admin]').click();
   await page.locator('#new-title').fill('Website Design Test');
