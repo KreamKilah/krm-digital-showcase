@@ -1,0 +1,134 @@
+import test,{before,after} from 'node:test';
+import assert from 'node:assert/strict';
+import pg from 'pg';
+import { createApp } from '../src/app.mjs';
+import { uuid, hashPassword, verifyPassword, normalizeEmail, parseCookies, COOKIE, safeHttpUrl, validatePassword } from '../src/security.mjs';
+
+const base='http://127.0.0.1:39121';
+const pass='VeryStrongPassphrase#2026';
+let db,server,admin,clientA,clientB,projectA,projectB,authAdmin,authA,authB;
+const qs=async(sql,params=[])=>db.query(sql,params);
+function request(url,{method='GET',body,cookie,csrf,origin=base}={}){
+ const headers={Accept:'application/json',Origin:origin};
+ if(body!==undefined)headers['Content-Type']='application/json';
+ if(cookie)headers.Cookie=cookie;
+ if(csrf)headers['X-CSRF-Token']=csrf;
+ return fetch(base+url,{method,headers,body:body===undefined?undefined:JSON.stringify(body),redirect:'manual'});
+}
+async function parsed(res){return res.json()}
+async function login(email,password=pass){
+ const res=await request('/api/login',{method:'POST',body:{email,password}});
+ const data=await parsed(res);assert.equal(res.status,200,JSON.stringify(data));
+ const cookie=res.headers.get('set-cookie').split(';')[0];
+ assert.ok(cookie.startsWith(COOKIE+'='));
+ assert.ok(res.headers.get('set-cookie').includes('Secure; SameSite=Strict'));
+ return {cookie,csrf:data.csrf,user:data.user};
+}
+async function mutate(url,auth,body,method='POST'){
+ return request(url,{method,cookie:auth.cookie,csrf:auth.csrf,body});
+}
+before(async()=>{
+ db=new pg.Pool({connectionString:process.env.DATABASE_URL,max:8});
+ await qs('TRUNCATE TABLE audit_events,login_failures,invitations,approvals,comments,milestones,project_members,projects,sessions,users RESTART IDENTITY CASCADE');
+ admin=uuid();clientA=uuid();clientB=uuid();projectA=uuid();projectB=uuid();
+ const hashed=await hashPassword(pass);
+ for(const [id,email,name,role] of [[admin,'owner@example.test','KRM Owner','admin'],[clientA,'alpha@example.test','Alpha Client','client'],[clientB,'beta@example.test','Beta Client','client']]){
+  await qs('INSERT INTO users(id,email,display_name,role,password_hash) VALUES($1,$2,$3,$4,$5)',[id,email,name,role,hashed]);
+ }
+ await qs('INSERT INTO projects(id,title,summary,stage,progress) VALUES($1,$2,$3,$4,$5),($6,$7,$8,$9,$10)',[projectA,'Alpha Website','Confidential Alpha','design',30,projectB,'Beta Website','Confidential Beta','review',75]);
+ await qs('INSERT INTO project_members(project_id,user_id) VALUES($1,$2),($3,$4)',[projectA,clientA,projectB,clientB]);
+ server=createApp(db,{origin:base,production:false}).listen(39121,'127.0.0.1');
+ await new Promise(resolve=>server.once('listening',resolve));
+ authAdmin=await login('owner@example.test');authA=await login('alpha@example.test');authB=await login('beta@example.test');
+});
+after(async()=>{if(server)await new Promise(resolve=>server.close(resolve));if(db)await db.end()});
+
+test('password hashes are salted and verified, unknown and malformed rejected',async()=>{
+ const a=await hashPassword('A very long passphrase 1234!');
+ const b=await hashPassword('A very long passphrase 1234!');
+ assert.notEqual(a,b);assert.equal(await verifyPassword('A very long passphrase 1234!',a),true);
+ assert.equal(await verifyPassword('wrong',a),false);assert.equal(await verifyPassword('wrong','scrypt$bad$abc'),false);
+ assert.equal(normalizeEmail('  TEST@EXAMPLE.ORG '),'test@example.org');
+ assert.equal(validatePassword('short'),false);
+ assert.equal(safeHttpUrl('javascript:alert(1)'),null);
+ assert.equal(safeHttpUrl('http://example.com'),null);
+});
+test('sessions are secured in hashed form, not raw token',async()=>{
+ const token=authA.cookie.split('=')[1];
+ const rows=await qs('SELECT token_hash FROM sessions WHERE user_id=$1',[clientA]);
+ assert.equal(rows.rowCount,1);
+ assert.ok(!rows.rows[0].token_hash.includes(token));
+ assert.equal(await verifyPassword('random','scrypt$bad$invalid'),false);
+ const r=await request('/api/me',{cookie:authA.cookie});
+ assert.equal(r.status,200);
+ const body=await parsed(r);assert.equal(body.user.role,'client');
+});
+test('tenants only see assigned projects, project IDs do not bypass membership',async()=>{
+ const a=await request('/api/projects',{cookie:authA.cookie});
+ const data=await parsed(a);assert.deepEqual(data.projects.map(p=>p.title),['Alpha Website']);
+ const b=await request('/api/projects/'+projectB,{cookie:authA.cookie});
+ assert.equal(b.status,404);
+ const c=await request('/api/projects/'+projectA,{cookie:authB.cookie});
+ assert.equal(c.status,404);
+ const all=await request('/api/projects',{cookie:authAdmin.cookie});
+ assert.equal((await parsed(all)).projects.length,2);
+});
+test('wrong origin and missing CSRF block writes, client cannot call admin endpoints',async()=>{
+ const noCsrf=await request('/api/projects/'+projectA+'/comments',{method:'POST',body:{body:'Hello'},cookie:authA.cookie});
+ assert.equal(noCsrf.status,403);
+ const wrong=await request('/api/projects/'+projectA+'/comments',{method:'POST',body:{body:'Hello'},cookie:authA.cookie,csrf:authA.csrf,origin:'https://attacker.invalid'});
+ assert.equal(wrong.status,403);
+ const adminDenied=await mutate('/api/admin/projects',authA,{title:'Attack',summary:''});
+ assert.equal(adminDenied.status,403);
+});
+test('client comments are constrained to membership even with valid CSRF',async()=>{
+ const other=await mutate('/api/projects/'+projectB+'/comments',authA,{body:'Do not leak'});
+ assert.equal(other.status,404);
+ const own=await mutate('/api/projects/'+projectA+'/comments',authA,{body:'<img src=x onerror=alert(1)> A alteração é necessária'});
+ assert.equal(own.status,201);
+ const ownDetail=await request('/api/projects/'+projectA,{cookie:authA.cookie});
+ assert.equal((await parsed(ownDetail)).comments.length,1);
+ const otherDetail=await request('/api/projects/'+projectB,{cookie:authB.cookie});
+ assert.equal((await parsed(otherDetail)).comments.length,0);
+});
+test('admin can create milestone and approval; another client cannot approve cross-tenant',async()=>{
+ const m=await mutate('/api/admin/projects/'+projectA+'/milestones',authAdmin,{title:'New design',status:'active',position:1});
+ assert.equal(m.status,201);
+ const r=await mutate('/api/admin/projects/'+projectA+'/approvals',authAdmin,{version:'Design V2'});
+ assert.equal(r.status,201);const approvalId=(await parsed(r)).id;
+ const other=await mutate('/api/projects/'+projectA+'/approvals/'+approvalId+'/decision',authB,{decision:'approved'});
+ assert.equal(other.status,404);
+ const own=await mutate('/api/projects/'+projectA+'/approvals/'+approvalId+'/decision',authA,{decision:'changes_requested'});
+ assert.equal(own.status,200);
+ const replay=await mutate('/api/projects/'+projectA+'/approvals/'+approvalId+'/decision',authA,{decision:'approved'});
+ assert.equal(replay.status,409);
+ const data=await parsed(await request('/api/projects/'+projectA,{cookie:authA.cookie}));
+ assert.equal(data.approvals[0].status,'changes_requested');
+});
+test('admin issues expiring one-use project invitation; client activation scoped',async()=>{
+ const inv=await mutate('/api/admin/projects/'+projectA+'/invites',authAdmin,{email:'newclient@example.test'});
+ assert.equal(inv.status,201);const data=await parsed(inv);
+ assert.ok(data.inviteUrl.includes('/#invite='));
+ const token=data.inviteUrl.split('#invite=')[1];
+ const accept=await request('/api/invites/accept',{method:'POST',body:{token,name:'New Client',password:'NewClientSecretPass!2026'}});
+ assert.equal(accept.status,201);
+ const again=await request('/api/invites/accept',{method:'POST',body:{token,name:'Another',password:'NewClientSecretPass!2026'}});
+ assert.equal(again.status,404);
+ const newAuth=await login('newclient@example.test','NewClientSecretPass!2026');
+ const projectsRes=await request('/api/projects',{cookie:newAuth.cookie});
+ assert.deepEqual((await parsed(projectsRes)).projects.map(p=>p.title),['Alpha Website']);
+});
+test('logout revokes server-side session immediately',async()=>{
+ const res=await mutate('/api/logout',authA,{});
+ assert.equal(res.status,200);
+ const attempt=await request('/api/me',{cookie:authA.cookie});assert.equal(attempt.status,401);
+ const still=await request('/api/me',{cookie:authB.cookie});assert.equal(still.status,200);
+});
+test('launch gate is closed by default in production mode',async()=>{
+ const closed=createApp(db,{origin:'https://clients.example.test',production:true});
+ const temporary=closed.listen(39122,'127.0.0.1');await new Promise(r=>temporary.once('listening',r));
+ try{
+  const r=await fetch('http://127.0.0.1:39122/',{redirect:'manual'});
+  assert.equal(r.status,503);
+ }finally{await new Promise(r=>temporary.close(r))}
+});
