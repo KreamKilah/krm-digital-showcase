@@ -184,6 +184,21 @@ test('authenticated user can revoke all active sessions including the current on
  assert.equal((await request('/api/me',{cookie:authB.cookie})).status,200);
 });
 
+
+test('password change requires current credentials and revokes all previous sessions',async()=>{
+ const newPass='AnEvenStrongerPassphrase!2030';
+ const wrong=await mutate('/api/me/password',authB,{currentPassword:'not the real pass',newPassword:newPass});
+ assert.equal(wrong.status,403);
+ const weak=await mutate('/api/me/password',authB,{currentPassword:pass,newPassword:'123456'});
+ assert.equal(weak.status,400);
+ const done=await mutate('/api/me/password',authB,{currentPassword:pass,newPassword:newPass});
+ assert.equal(done.status,200);
+ assert.equal((await request('/api/me',{cookie:authB.cookie})).status,401);
+ assert.equal((await request('/api/login',{method:'POST',body:{email:'beta@example.test',password:pass}})).status,401);
+ authB=await login('beta@example.test',newPass);
+ assert.equal((await request('/api/projects/'+projectB,{cookie:authB.cookie})).status,200);
+});
+
 test('launch gate is closed by default in production mode',async()=>{
  const closed=createApp(db,{origin:'https://clients.example.test',production:true});
  const temporary=closed.listen(39122,'127.0.0.1');await new Promise(r=>temporary.once('listening',r));
