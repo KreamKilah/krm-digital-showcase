@@ -73,3 +73,12 @@ Transformar o portefólio KRM num sistema organizado de captação, proposta, pr
 - Teste automatizado Playwright/Chromium aprovado nas larguras 360, 390, 768 e 1440 px, com verificação de alterações DE/PT/EN, estado do gerador e ausência de scroll horizontal. Workflow: https://github.com/KreamKilah/krm-digital-showcase/actions/runs/43093755895
 - Limitação: traduções aplicam-se à página principal do portefólio, **não** às páginas independentes NOVA, VANTA, ORLA ou à Client Space. Validação visual manual no dispositivo do cliente continua recomendada.
 - Próxima execução: Fase 2 (brief mais detalhado), sem envio real de dados ou faturação até cumprir requisitos legais.
+
+## Progresso da Fase 2 — 11/11/2026
+- Criado o **Project Brief Studio** com cinco etapas, resumo e exportação local TXT. Código em [brief-builder/](../brief-builder/index.html).
+- Entrada adicionada ao gerador rápido do portefólio; as opções de setor, estilo e objetivo são transmitidas por URL como escolhas predefinidas, sem dados pessoais.
+- Campos para arquitetura, funcionalidades, conteúdos, logótipo, domínio, idiomas, prazo e orçamento orientativo. Dois campos obrigatórios (setor e objetivo); os restantes são opcionais.
+- Traduções de interface e resumo em DE/PT-PT/EN, com adaptação responsiva e controlos acessíveis.
+- Não há submissão, upload, conta de cliente, envio de e-mail ou cobrança. Os dados não ficam guardados após atualizar a página; apenas a preferência de idioma é persistida.
+- Teste funcional automatizado adicionado ao workflow; **execução de CI/deploy ainda pendente no GitHub Actions** nesta atualização. Não marcar a fase como totalmente validada antes de o teste terminar com sucesso.
+- Próximo ponto de decisão: definir política de privacidade e canal de contacto seguro antes de criar a Fase 3 (pedido real de proposta).
