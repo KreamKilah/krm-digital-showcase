@@ -171,7 +171,8 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
   const existing=await db.query('SELECT enabled FROM mfa_factors WHERE user_id=$1',[req.auth.id]);
   if(existing.rows[0]?.enabled)return give(res,409,'MFA already enabled');
   const secret=newSecret();
-  await db.query('INSERT INTO mfa_factors(user_id,secret_ciphertext,enabled,last_time_step) VALUES($1,$2,FALSE,-1) ON CONFLICT(user_id) DO UPDATE SET secret_ciphertext=EXCLUDED.secret_ciphertext,enabled=FALSE,last_time_step=-1',[req.auth.id,encryptSecret(secret)]);
+  const written=await db.query('INSERT INTO mfa_factors(user_id,secret_ciphertext,enabled,last_time_step) VALUES($1,$2,FALSE,-1) ON CONFLICT(user_id) DO UPDATE SET secret_ciphertext=EXCLUDED.secret_ciphertext,enabled=FALSE,last_time_step=-1 WHERE mfa_factors.enabled=FALSE RETURNING user_id',[req.auth.id,encryptSecret(secret)]);
+  if(!written.rowCount)return give(res,409,'MFA already enabled');
   await db.query('DELETE FROM mfa_recovery_codes WHERE user_id=$1',[req.auth.id]);
   await audit(req.auth.id,null,'mfa_enrollment_started');
   res.json({secret:base32(secret),otpauthUri:enrollmentUri(req.auth.email,secret),instructions:'Use an offline authenticator app and verify the code.'});
@@ -309,6 +310,7 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
    await tx.query('BEGIN');
    await tx.query('UPDATE users SET password_hash=$1 WHERE id=$2 AND active=TRUE',[encoded,req.auth.id]);
    await tx.query('DELETE FROM sessions WHERE user_id=$1',[req.auth.id]);
+   await tx.query('DELETE FROM mfa_challenges WHERE user_id=$1',[req.auth.id]);
    await tx.query('INSERT INTO audit_events(id,actor_id,event) VALUES($1,$2,$3)',[uuid(),req.auth.id,'password_changed']);
    await tx.query('COMMIT');
   }catch(error){await tx.query('ROLLBACK');throw error}finally{tx.release()}
@@ -351,7 +353,10 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
    await client.query('BEGIN');
    const q=await client.query("UPDATE users SET active=$1 WHERE id=$2 AND role='client' RETURNING id,email",[active,req.params.id]);
    if(!q.rowCount){await client.query('ROLLBACK');return give(res,404,'Client not found')}
-   if(!active)await client.query('DELETE FROM sessions WHERE user_id=$1',[req.params.id]);
+   if(!active){
+    await client.query('DELETE FROM sessions WHERE user_id=$1',[req.params.id]);
+    await client.query('DELETE FROM mfa_challenges WHERE user_id=$1',[req.params.id]);
+   }
    await client.query('INSERT INTO audit_events(id,actor_id,event,details) VALUES($1,$2,$3,$4)',[uuid(),req.auth.id,active?'client_enabled':'client_disabled',JSON.stringify({clientId:req.params.id})]);
    await client.query('COMMIT');res.json({ok:true,active});
   }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
@@ -359,6 +364,7 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
  // Self-service emergency session revocation across browsers/devices.
  app.post('/api/me/sessions/revoke-all',sameOrigin,authed,csrf,asyncRoute(async(req,res)=>{
   await db.query('DELETE FROM sessions WHERE user_id=$1',[req.auth.id]);
+  await db.query('DELETE FROM mfa_challenges WHERE user_id=$1',[req.auth.id]);
   res.setHeader('Set-Cookie',sessionCookie('',0));
   res.json({ok:true});
  }));
