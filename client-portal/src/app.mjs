@@ -3,6 +3,7 @@ import pg from 'pg';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { uuid, opaque, digest, normalizeEmail, validatePassword, hashPassword, verifyPassword, constantTokenMatch, parseCookies, sessionCookie, COOKIE, safeHttpUrl, validId } from './security.mjs';
+import {newSecret,base32,encryptSecret,decryptSecret,matchTotp,enrollmentUri,recoveryCodes,normalizeRecovery} from './mfa.mjs';
 
 const SESSION_MS=8*60*60*1000;
 const appDir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public');
@@ -80,14 +81,55 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
   if(!email||typeof password!=='string'||password.length>256)return give(res,400,'Invalid credentials');
   const byEmail='email:'+digest(email),byIp='ip:'+digest(req.ip||'unknown');
   if((await failCount(byEmail))>=8||(await failCount(byIp))>=35)return give(res,429,'Too many attempts; retry later');
-  const q=await db.query('SELECT id,email,display_name,role,password_hash FROM users WHERE email=$1 AND active=TRUE',[email]);
+  const q=await db.query("SELECT u.id,u.email,u.display_name,u.role,u.password_hash,COALESCE(f.enabled,FALSE) AS mfa_enabled FROM users u LEFT JOIN mfa_factors f ON f.user_id=u.id WHERE u.email=$1 AND u.active=TRUE",[email]);
   const u=q.rows[0];const valid=await verifyPassword(password,u?.password_hash||await dummyHashPromise);
   if(!u||!valid){await failure(byEmail,byIp);return give(res,401,'Invalid credentials')}
+  if(u.mfa_enabled){
+   const challenge=opaque();
+   await db.query("INSERT INTO mfa_challenges(token_hash,user_id,expires_at) VALUES($1,$2,now()+interval '5 minutes')",[digest(challenge),u.id]);
+   return res.json({mfaRequired:true,challengeToken:challenge,expiresMinutes:5});
+  }
   const token=opaque(),csrfToken=opaque();
   await db.query('INSERT INTO sessions(token_hash,user_id,csrf_token,expires_at) VALUES($1,$2,$3,$4)',[digest(token),u.id,csrfToken,new Date(Date.now()+SESSION_MS)]);
   res.setHeader('Set-Cookie',sessionCookie(token));
   res.json({user:{id:u.id,email:u.email,name:u.display_name,role:u.role},csrf:csrfToken});
  }));
+
+ // MFA challenge: the password alone never yields a session for enrolled accounts.
+ app.post('/api/login/mfa',sameOrigin,asyncRoute(async(req,res)=>{
+  const challenge=req.body?.challengeToken,code=req.body?.code;
+  const recovery=normalizeRecovery(code);
+  if(typeof challenge!=='string'||!/^[A-Za-z0-9_-]{35,70}$/.test(challenge)||(!/^\\d{6}$/.test(code||'')&&!recovery))return give(res,400,'Invalid MFA challenge');
+  const tx=await db.connect();
+  try{
+   await tx.query('BEGIN');
+   const result=await tx.query("SELECT c.user_id,c.attempts,u.email,u.display_name,u.role,f.secret_ciphertext,f.last_time_step FROM mfa_challenges c JOIN users u ON u.id=c.user_id JOIN mfa_factors f ON f.user_id=u.id WHERE c.token_hash=$1 AND c.expires_at>now() AND c.attempts<5 AND u.active=TRUE AND f.enabled=TRUE FOR UPDATE OF c,f",[digest(challenge)]);
+   if(!result.rowCount){await tx.query('ROLLBACK');return give(res,401,'MFA challenge expired or invalid')}
+   const u=result.rows[0],mfaKey='mfa:'+digest(u.user_id),ipKey='mfa-ip:'+digest(req.ip||'unknown');
+   if((await failCount(mfaKey))>=10||(await failCount(ipKey))>=35){await tx.query('ROLLBACK');return give(res,429,'Too many attempts; retry later')}
+   let step=null,passed=false;
+   if(recovery){
+    const consumed=await tx.query('DELETE FROM mfa_recovery_codes WHERE user_id=$1 AND code_hash=$2 RETURNING code_hash',[u.user_id,digest(recovery)]);
+    passed=consumed.rowCount===1;
+   }else{
+    step=matchTotp(decryptSecret(u.secret_ciphertext),code,{lastStep:u.last_time_step});
+    passed=step!==null;
+   }
+   if(!passed){
+    await tx.query('UPDATE mfa_challenges SET attempts=attempts+1 WHERE token_hash=$1',[digest(challenge)]);
+    await tx.query('INSERT INTO login_failures(key) VALUES($1),($2)',[mfaKey,ipKey]);
+    await tx.query('COMMIT');return give(res,401,'Invalid verification code');
+   }
+   if(step!==null)await tx.query('UPDATE mfa_factors SET last_time_step=$1 WHERE user_id=$2',[step,u.user_id]);
+   await tx.query('DELETE FROM mfa_challenges WHERE token_hash=$1',[digest(challenge)]);
+   const token=opaque(),csrfToken=opaque();
+   await tx.query('INSERT INTO sessions(token_hash,user_id,csrf_token,expires_at) VALUES($1,$2,$3,$4)',[digest(token),u.user_id,csrfToken,new Date(Date.now()+SESSION_MS)]);
+   await tx.query('COMMIT');
+   res.setHeader('Set-Cookie',sessionCookie(token));
+   res.json({user:{id:u.user_id,email:u.email,name:u.display_name,role:u.role},csrf:csrfToken});
+  }catch(e){await tx.query('ROLLBACK');throw e}finally{tx.release()}
+ }));
+
  app.post('/api/invites/accept',sameOrigin,asyncRoute(async(req,res)=>{
   const token=req.body?.token,name=req.body?.name,password=req.body?.password;
   if(typeof token!=='string'||token.length<30||token.length>100||!validText(name,120)||!validatePassword(password))return give(res,400,'Invalid invitation details');
@@ -109,6 +151,49 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
    await client.query('COMMIT');res.status(201).json({ok:true,message:'Account created. Please log in.'});
   }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
  }));
+
+ // TOTP enrolment requires re-entering the current password; no external QR provider is used.
+ app.get('/api/me/mfa',authed,asyncRoute(async(req,res)=>{
+  const f=await db.query('SELECT enabled FROM mfa_factors WHERE user_id=$1',[req.auth.id]);
+  const codes=await db.query('SELECT count(*)::int AS n FROM mfa_recovery_codes WHERE user_id=$1',[req.auth.id]);
+  res.json({enabled:f.rows[0]?.enabled===true,recoveryCodesRemaining:codes.rows[0].n});
+ }));
+ app.post('/api/me/mfa/setup',sameOrigin,authed,csrf,asyncRoute(async(req,res)=>{
+  const password=req.body?.currentPassword;
+  if(typeof password!=='string')return give(res,400,'Current password required');
+  const person=await db.query('SELECT password_hash FROM users WHERE id=$1 AND active=TRUE',[req.auth.id]);
+  if(!person.rowCount||!await verifyPassword(password,person.rows[0].password_hash))return give(res,403,'Current password incorrect');
+  const existing=await db.query('SELECT enabled FROM mfa_factors WHERE user_id=$1',[req.auth.id]);
+  if(existing.rows[0]?.enabled)return give(res,409,'MFA already enabled');
+  const secret=newSecret();
+  await db.query('INSERT INTO mfa_factors(user_id,secret_ciphertext,enabled,last_time_step) VALUES($1,$2,FALSE,-1) ON CONFLICT(user_id) DO UPDATE SET secret_ciphertext=EXCLUDED.secret_ciphertext,enabled=FALSE,last_time_step=-1',[req.auth.id,encryptSecret(secret)]);
+  await db.query('DELETE FROM mfa_recovery_codes WHERE user_id=$1',[req.auth.id]);
+  await audit(req.auth.id,null,'mfa_enrollment_started');
+  res.json({secret:base32(secret),otpauthUri:enrollmentUri(req.auth.email,secret),instructions:'Use an offline authenticator app and verify the code.'});
+ }));
+ app.post('/api/me/mfa/confirm',sameOrigin,authed,csrf,asyncRoute(async(req,res)=>{
+  const code=req.body?.code;
+  if(typeof code!=='string'||!/^\\d{6}$/.test(code))return give(res,400,'Six-digit code required');
+  const tx=await db.connect();
+  try{
+   await tx.query('BEGIN');
+   const q=await tx.query('SELECT secret_ciphertext,enabled,last_time_step FROM mfa_factors WHERE user_id=$1 FOR UPDATE',[req.auth.id]);
+   if(!q.rowCount||q.rows[0].enabled){await tx.query('ROLLBACK');return give(res,409,'MFA not in setup')}
+   const step=matchTotp(decryptSecret(q.rows[0].secret_ciphertext),code,{lastStep:q.rows[0].last_time_step});
+   if(step===null){await tx.query('ROLLBACK');return give(res,403,'Invalid verification code')}
+   const codes=recoveryCodes(8);
+   await tx.query('UPDATE mfa_factors SET enabled=TRUE,last_time_step=$1,enabled_at=now() WHERE user_id=$2',[step,req.auth.id]);
+   await tx.query('DELETE FROM mfa_recovery_codes WHERE user_id=$1',[req.auth.id]);
+   for(const c of codes)await tx.query('INSERT INTO mfa_recovery_codes(user_id,code_hash) VALUES($1,$2)',[req.auth.id,c.hash]);
+   await tx.query('DELETE FROM sessions WHERE user_id=$1',[req.auth.id]);
+   await tx.query('DELETE FROM mfa_challenges WHERE user_id=$1',[req.auth.id]);
+   await tx.query('INSERT INTO audit_events(id,actor_id,event) VALUES($1,$2,$3)',[uuid(),req.auth.id,'mfa_enabled']);
+   await tx.query('COMMIT');
+   res.setHeader('Set-Cookie',sessionCookie('',0));
+   res.json({ok:true,reauthenticate:true,recoveryCodes:codes.map(c=>c.display)});
+  }catch(e){await tx.query('ROLLBACK');throw e}finally{tx.release()}
+ }));
+
  app.get('/api/me',authed,(req,res)=>{
   const u=req.auth;
   res.json({user:{id:u.id,email:u.email,name:u.display_name,role:u.role},csrf:u.csrf_token});
