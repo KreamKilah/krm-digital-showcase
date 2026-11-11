@@ -66,7 +66,7 @@
  <div class="rightpane">
   <header class="topbar">
    <span class="crumb">KRM DIGITAL <b>/</b> CLIENT SPACE <b>/</b> <span id="crumb-view">DASHBOARD</span></span>
-   <div class="topright"><span class="online"><i></i> Sessão protegida</span><button id="signout" type="button">Sair ↗</button></div>
+   <div class="topright"><span class="online"><i></i> Sessão protegida</span><button id="revoke-sessions" type="button" title="Revogar todas as sessões nos dispositivos">Sair de todos</button><button id="signout" type="button">Sair ↗</button></div>
   </header>
   <div class="mainwrap">
    <div class="introline"><div><div class="eyebrow">UM ESPAÇO PARA O TEU PROJETO</div><h1 id="workspace-title">O teu projeto, num só lugar.</h1><p id="workspace-intro">Todas as etapas, decisões e atualizações organizadas.</p></div><span class="portal-version">KRM PORTAL <b>01</b></span></div>
@@ -127,6 +127,14 @@
      <article class="panel"><div class="panelhead"><h2>Novas etapas & aprovações</h2><span>ADMIN</span></div>
       <form id="new-milestone" class="formblock"><label for="milestone-title">Nome da etapa</label><input id="milestone-title" maxlength="130" required placeholder="Ajustar versão mobile"><button class="primary" type="submit">Adicionar etapa ↗</button></form>
       <div class="section-divider"></div><form id="request-approval" class="formblock"><label for="approval-version">Versão para aprovação</label><input id="approval-version" maxlength="80" required placeholder="Design V1.3"><button class="primary" type="submit">Pedir aprovação ↗</button></form>
+     </article>
+     <article class="panel"><div class="panelhead"><h2>Acessos & convites</h2><span>ADMIN · SEGURANÇA</span></div>
+      <p class="bodycopy">Para o projeto selecionado: ver quem tem acesso, retirar um cliente, desativar a conta ou cancelar um convite ainda não aceite. A revogação é imediata no servidor.</p>
+      <button type="button" id="access-refresh" class="primary" style="margin:17px 0">Atualizar acessos ↻</button>
+      <div id="access-status" class="bodycopy" aria-live="polite"></div>
+      <div id="access-members" class="access-list" aria-label="Clientes autorizados"></div>
+      <div class="section-divider"></div><h3 style="margin-bottom:13px">Convites pendentes</h3>
+      <div id="access-invites" class="access-list" aria-label="Convites por aceitar"></div>
      </article>
     </div>
    </section>
