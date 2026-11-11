@@ -82,3 +82,19 @@ Transformar o portefólio KRM num sistema organizado de captação, proposta, pr
 - Não há submissão, upload, conta de cliente, envio de e-mail ou cobrança. Os dados não ficam guardados após atualizar a página; apenas a preferência de idioma é persistida.
 - Teste funcional automatizado adicionado ao workflow; **execução de CI/deploy ainda pendente no GitHub Actions** nesta atualização. Não marcar a fase como totalmente validada antes de o teste terminar com sucesso.
 - Próximo ponto de decisão: definir política de privacidade e canal de contacto seguro antes de criar a Fase 3 (pedido real de proposta).
+
+## Progresso da Fase 3 — 11/11/2026
+- Integração de **pré-visualização de pedido de proposta** no ecrã final do Brief Builder, sem novo site ou formulário remoto.
+- Demonstração dos campos de contacto: nome, e-mail, empresa, país, tipo de cliente, mensagem; validação local e aviso expresso de que **nada é enviado**.
+- Pré-visualização do pedido completo e do possível e-mail de confirmação automática. Os estados posteriores são simulados: análise humana → proposta → aceitação → Client Space.
+- Copiar/guardar TXT por ação do utilizador; ligação separada à Client Space **pública de demonstração**.
+- Localização DE/PT-PT/EN e testes de browser adicionados, incluindo exportação, validação, XSS no resumo, ausência de pedidos POST e ausência de armazenamento persistente do conteúdo.
+- **Fase 3 real permanece PENDENTE**: não existe endpoint privado, registo no servidor, ID real de pedido, notificação automática, consentimento para tratamento de dados validado ou fatura.
+- Publicações recentes no GitHub Actions estão em fila e algumas tiveram startup_failure; **não tratar a demo como validada na produção** antes de confirmar o workflow e o site servido.
+- Check-list para ativação real: [KRM_REQUEST_PREVIEW_PHASE3_PT.md](./KRM_REQUEST_PREVIEW_PHASE3_PT.md).
+
+## Próximas prioridades
+1. Resolver bloqueio de CI/GitHub Pages e executar testes finais em telemóvel/desktop.
+2. Completar os dados e documentos legais da KRM para receber pedidos verdadeiros.
+3. Implementar backend seguro de receção + estado + confirmação por e-mail, mantendo preços/aceitações sob revisão humana.
+4. Integrar a administração privada e Client Space apenas após autenticação e permissões testadas.
