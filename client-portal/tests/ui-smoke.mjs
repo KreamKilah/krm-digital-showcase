@@ -64,6 +64,7 @@ try{
    if(secret!=='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567')throw Error('Enrollment secret not displayed correctly');
    await page.locator('#mfa-confirm-code').fill('123456');
    await page.locator('#mfa-confirm-form button[type=submit]').click();
+   await page.locator('#mfa-codes-modal').waitFor({state:'visible',timeout:12000});
    if(!(await page.locator('#mfa-codes-modal').evaluate(el=>el.open)))throw Error('Recovery codes not visible');
    if((await page.locator('#mfa-codes-output').innerText()).split('TEST-CODE-').length!==9)throw Error('Wrong recovery code count');
    await page.screenshot({path:'ui-evidence/mfa-codes-'+width+'.png'});
