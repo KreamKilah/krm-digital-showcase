@@ -70,7 +70,7 @@
       </section>
 
       <section id="view-pipeline" class="view" hidden aria-label="Pipeline de pedidos">
-        <div class="toolbar"><label class="searchbox">⌕ <span class="sr-only">Pesquisar pedidos</span><input id="searchRequests" type="search" placeholder="Pesquisar marca ou referência…" autocomplete="off"></label><label class="select-wrap">Estado <select id="statusFilter"><option value="all">Todos</option><option value="new">Novo</option><option value="review">Análise</option><option value="quoted">Proposta</option><option value="approved">Aprovado</option><option value="build">Produção</option><option value="done">Entregue</option></select></label></div>
+        <div class="toolbar"><label class="searchbox">⌕ <span class="sr-only">Pesquisar pedidos</span><input id="searchRequests" type="search" placeholder="Pesquisar marca ou referência…" autocomplete="off"></label><label class="select-wrap">Estado <select id="statusFilter"><option value="all">Todos</option><option value="new">Novo</option><option value="review">Análise</option><option value="quoted">Proposta</option><option value="approved">Aprovado</option><option value="build">Produção</option><option value="done">Entregue</option></select></label><button id="importBriefButton" type="button" class="btn secondary" title="Apenas ficheiros de teste sem dados pessoais">↥ IMPORTAR BRIEF .TXT</button><input id="importBriefFile" type="file" accept=".txt,text/plain" hidden aria-label="Importar briefing fictício TXT"></div>
         <div id="pipelineStats" class="pipeline-stats"></div>
         <div id="pipelineBoard" class="pipeline-board"></div>
         <p class="footnote">Arrasta não é necessário: abre um pedido para mudar o estado de demonstração, criar tarefas ou preparar uma proposta.</p>
