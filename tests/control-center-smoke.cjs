@@ -94,6 +94,23 @@ async function checkOverflow(page,width){
    assert.equal(await page.locator('.lane-card').count(),5);
    assert.equal(await page.locator('.lane-card img').count(),0);
    assert.match(await page.locator('#pipelineBoard').textContent(),/<img src=x onerror=alert\(1\)>/);
+   const sampleBrief=[
+    'KRM DIGITAL — BRIEF CRIATIVO',
+    '================================',
+    'Nome do projeto: Café Teste',
+    'Setor: Restaurante / Café',
+    'Objetivo principal: Permitir reservas',
+    'Páginas pretendidas: Página inicial, Menu, Contacto',
+    'Idiomas do site: Alemão, Português',
+    'Estilo visual: Editorial',
+    'Orçamento indicativo: 300–600 €',
+    'CONCEITO NÃO VINCULATIVO'
+   ].join('\\n');
+   await page.locator('#importBriefFile').setInputFiles({name:'KRM-demo.txt',mimeType:'text/plain',buffer:Buffer.from(sampleBrief)});
+   assert.equal(await page.locator('.lane-card').count(),6);
+   assert.match(await page.locator('#pipelineBoard').textContent(),/Café Teste/);
+   await page.locator('#importBriefFile').setInputFiles({name:'invalid.txt',mimeType:'text/plain',buffer:Buffer.from('Não é um briefing KRM')});
+   assert.equal(await page.locator('.lane-card').count(),6);
    await checkOverflow(page,width);
    assert.deepEqual(await page.evaluate(()=>Object.keys(localStorage)),[]);
    assert.deepEqual(await page.evaluate(()=>Object.keys(sessionStorage)),[]);
