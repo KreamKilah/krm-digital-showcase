@@ -82,7 +82,17 @@
 @media(max-width:650px){.logo-approved img{width:154px}.brand-signature{margin-top:18px;gap:10px}.brand-signature img{width:146px}.brand-signature .mono{font-size:9px}.footer-brand-approved img{width:min(320px,76vw)}}
 @media(max-width:385px){.logo-approved img{width:136px}.nav-cta{font-size:8px;padding:9px}.brand-signature img{width:127px}}
 
-.btn-client-preview{border-color:#b7e68b;color:#d5ff9b;background:#d4ff6712}.btn-client-preview:hover{background:#d5ff9b;color:#151a19;border-color:#d5ff9b}@media(max-width:680px){.btn-client-preview{font-size:10px}.footer-bottom{flex-wrap:wrap}}</style>
+.btn-client-preview{border-color:#b7e68b;color:#d5ff9b;background:#d4ff6712}.btn-client-preview:hover{background:#d5ff9b;color:#151a19;border-color:#d5ff9b}@media(max-width:680px){.btn-client-preview{font-size:10px}.footer-bottom{flex-wrap:wrap}}/* KRM multilingual selector */
+.language-switch{display:inline-flex;align-items:center;flex-shrink:0;gap:2px;padding:3px;border:1px solid #f3f2e95c;background:#18172a;border-radius:5px}
+.language-switch button{border:0;border-radius:3px;background:transparent;color:#c9c7da;padding:7px 6px;min-width:28px;font:700 10px var(--mono)}
+.language-switch button[aria-pressed=true]{background:var(--tangerine);color:#15141e}
+.language-switch button:focus-visible{outline:2px solid var(--tangerine);outline-offset:2px}
+@media(max-width:1150px){.nav-end{gap:8px}.main-links{gap:14px}}
+@media(max-width:650px){.nav-wrap{gap:8px}.nav-end{gap:6px}.nav-cta{display:none}.nav-clock{display:none}.language-switch button{font-size:9px;min-width:24px;padding:7px 4px}.menu-button{width:39px;min-width:39px}}
+@media(max-width:385px){.language-switch button{min-width:22px;padding:7px 3px}}
+html[lang="pt-PT"] .hero-title{font-size:clamp(70px,10.2vw,175px)}
+html[lang="pt-PT"] .brief-copy h2{font-size:clamp(55px,7vw,103px)}
+</style>
 </head>
 <body>
 <a href="#work" class="skip">Direkt zu den Projekten</a>
@@ -91,7 +101,7 @@
 <header class="site-nav" id="siteNav"><nav class="wrap nav-wrap" aria-label="Hauptnavigation">
 <a href="#top" class="logo logo-approved" aria-label="KRM DIGITAL — Startseite"><img src="./brand/krm-horizontal.webp" alt="KRM DIGITAL" width="197" height="54" decoding="async"></a>
 <div class="main-links" id="mainLinks"><a href="#work">Work / 03</a><a href="#lab">Experience Lab</a><a href="#method">Approach</a><a href="#brief">Your Vision</a></div>
-<div class="nav-end"><span class="nav-clock"><i></i> Independent studio</span><a class="nav-cta" href="#lab">ENTER THE LAB ↗</a><button class="menu-button" type="button" id="menuButton" aria-controls="mainLinks" aria-expanded="false" aria-label="Menü öffnen">☰</button></div>
+<div class="nav-end"><div class="language-switch" role="group" aria-label="Website-Sprache / Idioma / Language"><button type="button" data-lang="de" aria-pressed="true" aria-label="Deutsch">DE</button><button type="button" data-lang="pt" aria-pressed="false" aria-label="Português">PT</button><button type="button" data-lang="en" aria-pressed="false" aria-label="English">EN</button></div><span class="nav-clock"><i></i> Independent studio</span><a class="nav-cta" href="#lab">ENTER THE LAB ↗</a><button class="menu-button" type="button" id="menuButton" aria-controls="mainLinks" aria-expanded="false" aria-label="Menü öffnen">☰</button></div>
 </nav></header>
 <main>
 <section class="hero" id="top">
@@ -196,5 +206,6 @@
  });
 })();
 </script>
+<script src="./i18n.js" defer></script>
 </body>
 </html>
