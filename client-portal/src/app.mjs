@@ -202,6 +202,25 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
   await audit(req.auth.id,req.params.id,'client_assigned',{email});res.status(201).json({ok:true});
  }));
 
+
+ // Credential change requires current password and invalidates every session, including this one.
+ app.post('/api/me/password',sameOrigin,authed,csrf,asyncRoute(async(req,res)=>{
+  const currentPassword=req.body?.currentPassword,newPassword=req.body?.newPassword;
+  if(typeof currentPassword!=='string'||!validatePassword(newPassword)||currentPassword===newPassword)return give(res,400,'Invalid password change');
+  const q=await db.query('SELECT password_hash FROM users WHERE id=$1 AND active=TRUE',[req.auth.id]);
+  if(!q.rowCount||!await verifyPassword(currentPassword,q.rows[0].password_hash))return give(res,403,'Current password incorrect');
+  const encoded=await hashPassword(newPassword),tx=await db.connect();
+  try{
+   await tx.query('BEGIN');
+   await tx.query('UPDATE users SET password_hash=$1 WHERE id=$2 AND active=TRUE',[encoded,req.auth.id]);
+   await tx.query('DELETE FROM sessions WHERE user_id=$1',[req.auth.id]);
+   await tx.query('INSERT INTO audit_events(id,actor_id,event) VALUES($1,$2,$3)',[uuid(),req.auth.id,'password_changed']);
+   await tx.query('COMMIT');
+  }catch(error){await tx.query('ROLLBACK');throw error}finally{tx.release()}
+  res.setHeader('Set-Cookie',sessionCookie('',0));
+  res.json({ok:true,reauthenticate:true});
+ }));
+
  // Administrative access controls. Never derive project membership from client-supplied role data.
  app.get('/api/admin/projects/:id/access',authed,admin,requireId,asyncRoute(async(req,res)=>{
   const exists=await db.query('SELECT 1 FROM projects WHERE id=$1',[req.params.id]);
