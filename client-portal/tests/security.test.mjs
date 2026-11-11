@@ -118,12 +118,72 @@ test('admin issues expiring one-use project invitation; client activation scoped
  const projectsRes=await request('/api/projects',{cookie:newAuth.cookie});
  assert.deepEqual((await parsed(projectsRes)).projects.map(p=>p.title),['Alpha Website']);
 });
+
+test('admin can inspect client access but ordinary clients cannot enumerate project users',async()=>{
+ const adminView=await request('/api/admin/projects/'+projectB+'/access',{cookie:authAdmin.cookie});
+ assert.equal(adminView.status,200);
+ const body=await parsed(adminView);
+ assert.deepEqual(body.members.map(u=>u.email),['beta@example.test']);
+ assert.ok(Array.isArray(body.pendingInvitations));
+ const blocked=await request('/api/admin/projects/'+projectB+'/access',{cookie:authA.cookie});
+ assert.equal(blocked.status,403);
+});
+test('admin revokes project membership instantly, then can reassign same client',async()=>{
+ const unauthorized=await mutate('/api/admin/projects/'+projectB+'/members/'+clientB,authB,{},'DELETE');
+ assert.equal(unauthorized.status,403);
+ const revocation=await mutate('/api/admin/projects/'+projectB+'/members/'+clientB,authAdmin,{},'DELETE');
+ assert.equal(revocation.status,200);
+ assert.equal((await request('/api/projects/'+projectB,{cookie:authB.cookie})).status,404);
+ const own=await parsed(await request('/api/projects',{cookie:authB.cookie}));
+ assert.deepEqual(own.projects,[]);
+ assert.equal((await mutate('/api/projects/'+projectB+'/comments',authB,{body:'Must stay excluded'})).status,404);
+ const restored=await mutate('/api/admin/projects/'+projectB+'/members',authAdmin,{email:'beta@example.test'});
+ assert.equal(restored.status,201);
+ assert.equal((await request('/api/projects/'+projectB,{cookie:authB.cookie})).status,200);
+});
+test('admin can revoke an outstanding invitation; revoked URL cannot register',async()=>{
+ const email='cancelled@example.test';
+ const invite=await mutate('/api/admin/projects/'+projectB+'/invites',authAdmin,{email});
+ assert.equal(invite.status,201);
+ const token=(await parsed(invite)).inviteUrl.split('#invite=')[1];
+ const access=await parsed(await request('/api/admin/projects/'+projectB+'/access',{cookie:authAdmin.cookie}));
+ assert.ok(access.pendingInvitations.some(p=>p.email===email));
+ const revoke=await mutate('/api/admin/projects/'+projectB+'/invitations',authAdmin,{email},'DELETE');
+ assert.equal(revoke.status,200);
+ const accept=await request('/api/invites/accept',{method:'POST',body:{token,name:'Cancelled Person',password:'ExampleSecretPassphrase2026!'}});
+ assert.equal(accept.status,404);
+});
+test('disabling a client revokes sessions and blocks login, then allows reactivation',async()=>{
+ const noAdmin=await mutate('/api/admin/clients/'+clientB+'/status',authB,{active:false});
+ assert.equal(noAdmin.status,403);
+ const cannotDisableAdmin=await mutate('/api/admin/clients/'+admin+'/status',authAdmin,{active:false});
+ assert.equal(cannotDisableAdmin.status,404);
+ const disabled=await mutate('/api/admin/clients/'+clientB+'/status',authAdmin,{active:false});
+ assert.equal(disabled.status,200);
+ assert.equal((await request('/api/me',{cookie:authB.cookie})).status,401);
+ const deniedLogin=await request('/api/login',{method:'POST',body:{email:'beta@example.test',password:pass}});
+ assert.equal(deniedLogin.status,401);
+ const enabled=await mutate('/api/admin/clients/'+clientB+'/status',authAdmin,{active:true});
+ assert.equal(enabled.status,200);
+ authB=await login('beta@example.test');
+ assert.equal((await request('/api/projects/'+projectB,{cookie:authB.cookie})).status,200);
+});
+
 test('logout revokes server-side session immediately',async()=>{
  const res=await mutate('/api/logout',authA,{});
  assert.equal(res.status,200);
  const attempt=await request('/api/me',{cookie:authA.cookie});assert.equal(attempt.status,401);
  const still=await request('/api/me',{cookie:authB.cookie});assert.equal(still.status,200);
 });
+
+test('authenticated user can revoke all active sessions including the current one',async()=>{
+ const response=await mutate('/api/me/sessions/revoke-all',authB,{});
+ assert.equal(response.status,200);
+ assert.equal((await request('/api/me',{cookie:authB.cookie})).status,401);
+ authB=await login('beta@example.test');
+ assert.equal((await request('/api/me',{cookie:authB.cookie})).status,200);
+});
+
 test('launch gate is closed by default in production mode',async()=>{
  const closed=createApp(db,{origin:'https://clients.example.test',production:true});
  const temporary=closed.listen(39122,'127.0.0.1');await new Promise(r=>temporary.once('listening',r));
