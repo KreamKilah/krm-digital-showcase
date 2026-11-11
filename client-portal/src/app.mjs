@@ -99,7 +99,7 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
  app.post('/api/login/mfa',sameOrigin,asyncRoute(async(req,res)=>{
   const challenge=req.body?.challengeToken,code=req.body?.code;
   const recovery=normalizeRecovery(code);
-  if(typeof challenge!=='string'||!/^[A-Za-z0-9_-]{35,70}$/.test(challenge)||(!/^\\d{6}$/.test(code||'')&&!recovery))return give(res,400,'Invalid MFA challenge');
+  if(typeof challenge!=='string'||!/^[A-Za-z0-9_-]{35,70}$/.test(challenge)||(!/^\d{6}$/.test(code||'')&&!recovery))return give(res,400,'Invalid MFA challenge');
   const tx=await db.connect();
   try{
    await tx.query('BEGIN');
@@ -173,7 +173,7 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
  }));
  app.post('/api/me/mfa/confirm',sameOrigin,authed,csrf,asyncRoute(async(req,res)=>{
   const code=req.body?.code;
-  if(typeof code!=='string'||!/^\\d{6}$/.test(code))return give(res,400,'Six-digit code required');
+  if(typeof code!=='string'||!/^\d{6}$/.test(code))return give(res,400,'Six-digit code required');
   const tx=await db.connect();
   try{
    await tx.query('BEGIN');
