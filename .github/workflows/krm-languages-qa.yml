@@ -8,6 +8,7 @@ on:
       - tests/brief-builder-smoke.cjs
       - tests/proposal-preview-smoke.cjs
       - tests/site-integrity.cjs
+      - tests/visual-capture.cjs
       - brief-builder/**
       - .github/workflows/krm-languages-qa.yml
   workflow_dispatch:
@@ -32,3 +33,13 @@ jobs:
           node tests/i18n-smoke.cjs
           node tests/brief-builder-smoke.cjs
           node tests/proposal-preview-smoke.cjs
+      - name: Capture visual QA screenshots
+        run: node tests/visual-capture.cjs
+      - name: Upload visual QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krm-visual-qa
+          path: qa-screenshots/*.png
+          if-no-files-found: warn
+          retention-days: 7
