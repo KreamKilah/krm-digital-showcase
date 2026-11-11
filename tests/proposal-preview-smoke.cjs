@@ -46,6 +46,10 @@ async function assertWidth(page,width){
    assert.match(await page.locator('#proposalResult').textContent(),/NÃO ENVIADO/);
    assert.match(await page.locator('#proposalEmail').textContent(),/nenhum pedido foi recebido/i);
    assert.equal(await page.locator('#proposalSummary img').count(),0);
+   assert.equal(await page.locator('.proposal-brief-details').count(),1);
+   await page.locator('.proposal-brief-details summary').click();
+   assert.match(await page.locator('.proposal-brief-list').textContent(),/Café Aurora/);
+   assert.equal(await page.locator('.proposal-client-demo a').getAttribute('href'),'../client-space-demo/');
    assert.match(await page.locator('#proposalSummary').textContent(),/<img src=x onerror/);
    await assertWidth(page,width);
    await page.locator('#proposalCopy').click();
