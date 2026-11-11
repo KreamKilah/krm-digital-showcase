@@ -2,7 +2,7 @@ import test,{before,after} from 'node:test';
 import assert from 'node:assert/strict';
 import pg from 'pg';
 import { randomBytes } from 'node:crypto';
-import { decryptSecret, totpForStep, matchTotp, normalizeRecovery } from '../src/mfa.mjs';
+import { newSecret, encryptSecret, decryptSecret, totpForStep, matchTotp, normalizeRecovery } from '../src/mfa.mjs';
 import { createApp } from '../src/app.mjs';
 import { uuid, hashPassword, verifyPassword, normalizeEmail, parseCookies, COOKIE, safeHttpUrl, validatePassword } from '../src/security.mjs';
 
@@ -203,6 +203,16 @@ test('password change requires current credentials and revokes all previous sess
 });
 
 
+test('encrypted TOTP secrets use unique nonces, reject tampering and enforce code replay policy',async()=>{
+ const secret=newSecret(),a=encryptSecret(secret),b=encryptSecret(secret);
+ assert.notEqual(a,b);assert.deepEqual(decryptSecret(a),secret);
+ const parts=a.split('.');parts[2]=(parts[2][0]==='A'?'B':'A')+parts[2].slice(1);
+ assert.throws(()=>decryptSecret(parts.join('.')));
+ const now=Date.now(),step=Math.floor(now/30000),code=totpForStep(secret,step);
+ assert.equal(matchTotp(secret,code,{now,lastStep:step}),null);
+ assert.equal(matchTotp(secret,code,{now,lastStep:step-1}),step);
+});
+
 test('MFA enrollment encrypts secret and enforces a second factor before admin login',async()=>{
  const owner=uuid(),email='mfaowner@example.test';
  await qs("INSERT INTO users(id,email,display_name,role,password_hash) VALUES($1,$2,$3,'admin',$4)",[owner,email,'MFA owner',await hashPassword(pass)]);
@@ -250,6 +260,18 @@ test('MFA enrollment encrypts secret and enforces a second factor before admin l
  const thirdChallenge=(await parsed(thirdLogin)).challengeToken;
  const reuse=await request('/api/login/mfa',{method:'POST',body:{challengeToken:thirdChallenge,code}});
  assert.equal(reuse.status,401);
+ const fourth=await request('/api/login',{method:'POST',body:{email,password:pass}});
+ const limited=(await parsed(fourth)).challengeToken;
+ const candidates=[currentStep-1,currentStep,currentStep+1].filter(n=>n>=0).map(step=>totpForStep(secret,step));
+ let wrongCode='222222';while(candidates.includes(wrongCode))wrongCode=String((Number(wrongCode)+111111)%1000000).padStart(6,'0');
+ const wrongOrigin=await request('/api/login/mfa',{method:'POST',body:{challengeToken:limited,code:wrongCode},origin:'https://other.invalid'});
+ assert.equal(wrongOrigin.status,403);
+ for(let i=0;i<5;i++){
+  const wrong=await request('/api/login/mfa',{method:'POST',body:{challengeToken:limited,code:wrongCode}});
+  assert.equal(wrong.status,401);
+ }
+ const exhausted=await request('/api/login/mfa',{method:'POST',body:{challengeToken:limited,code:confirmed.recoveryCodes[1]}});
+ assert.equal(exhausted.status,401);
 });
 
 test('launch gate is closed by default in production mode',async()=>{
