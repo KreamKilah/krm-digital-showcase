@@ -161,8 +161,13 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
  app.post('/api/me/mfa/setup',sameOrigin,authed,csrf,asyncRoute(async(req,res)=>{
   const password=req.body?.currentPassword;
   if(typeof password!=='string')return give(res,400,'Current password required');
+  const reauthKey='mfa-setup:'+digest(req.auth.id);
+  if((await failCount(reauthKey))>=6)return give(res,429,'Too many attempts; retry later');
   const person=await db.query('SELECT password_hash FROM users WHERE id=$1 AND active=TRUE',[req.auth.id]);
-  if(!person.rowCount||!await verifyPassword(password,person.rows[0].password_hash))return give(res,403,'Current password incorrect');
+  if(!person.rowCount||!await verifyPassword(password,person.rows[0].password_hash)){
+   await db.query('INSERT INTO login_failures(key) VALUES($1)',[reauthKey]);
+   return give(res,403,'Current password incorrect');
+  }
   const existing=await db.query('SELECT enabled FROM mfa_factors WHERE user_id=$1',[req.auth.id]);
   if(existing.rows[0]?.enabled)return give(res,409,'MFA already enabled');
   const secret=newSecret();
@@ -174,13 +179,18 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
  app.post('/api/me/mfa/confirm',sameOrigin,authed,csrf,asyncRoute(async(req,res)=>{
   const code=req.body?.code;
   if(typeof code!=='string'||!/^\d{6}$/.test(code))return give(res,400,'Six-digit code required');
+  const verifyKey='mfa-confirm:'+digest(req.auth.id);
+  if((await failCount(verifyKey))>=8)return give(res,429,'Too many attempts; retry later');
   const tx=await db.connect();
   try{
    await tx.query('BEGIN');
    const q=await tx.query('SELECT secret_ciphertext,enabled,last_time_step FROM mfa_factors WHERE user_id=$1 FOR UPDATE',[req.auth.id]);
    if(!q.rowCount||q.rows[0].enabled){await tx.query('ROLLBACK');return give(res,409,'MFA not in setup')}
    const step=matchTotp(decryptSecret(q.rows[0].secret_ciphertext),code,{lastStep:q.rows[0].last_time_step});
-   if(step===null){await tx.query('ROLLBACK');return give(res,403,'Invalid verification code')}
+   if(step===null){
+    await tx.query('INSERT INTO login_failures(key) VALUES($1)',[verifyKey]);
+    await tx.query('COMMIT');return give(res,403,'Invalid verification code')
+   }
    const codes=recoveryCodes(8);
    await tx.query('UPDATE mfa_factors SET enabled=TRUE,last_time_step=$1,enabled_at=now() WHERE user_id=$2',[step,req.auth.id]);
    await tx.query('DELETE FROM mfa_recovery_codes WHERE user_id=$1',[req.auth.id]);
