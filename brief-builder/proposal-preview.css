@@ -59,3 +59,11 @@
 .proposal-lifecycle>div:nth-child(-n+2){border-bottom:1px solid #ffffff32}
 .proposal-summary-row{grid-template-columns:1fr;gap:2px}
 }
+
+.proposal-brief-details{border-top:1px solid #22203938;padding:16px 0 9px}
+.proposal-brief-details summary{cursor:pointer;color:#4a395a;font:700 11px/1.65 var(--mono);letter-spacing:.01em}
+.proposal-brief-details summary:focus-visible{outline-color:#6046b8}
+.proposal-brief-list{margin:16px 0 0}
+.proposal-brief-list .proposal-summary-row{padding:10px 0}
+.proposal-brief-list dt{font:700 10px/1.65 var(--mono);color:#716a8a;text-transform:uppercase}
+.proposal-brief-list dd{font-size:12px;line-height:1.6;margin:0;overflow-wrap:anywhere}
