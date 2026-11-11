@@ -37,7 +37,7 @@ export function totpForStep(secret,step){
  return String((mac.readUInt32BE(offset)&0x7fffffff)%1000000).padStart(6,'0');
 }
 export function matchTotp(secret,code,{now=Date.now(),lastStep=-1}={}){
- if(typeof code!=='string'||!/^\\d{6}$/.test(code))return null;
+ if(typeof code!=='string'||!/^\d{6}$/.test(code))return null;
  const current=Math.floor(now/30000);
  for(const step of [current-1,current,current+1]){
   if(step<=Number(lastStep)||step<0)continue;
