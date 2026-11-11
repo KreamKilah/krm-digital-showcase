@@ -90,3 +90,12 @@ html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--te
  .sidebar .nav button{min-width:0;width:100%;white-space:normal;justify-content:flex-start;font-size:11px;padding:10px 12px}
  .sidebar .nav button span{min-width:0}
 }
+
+/* Project-scoped access/revocation controls */
+.access-list{display:grid;gap:11px;margin-top:14px}
+.access-row{border:1px solid var(--line);border-radius:13px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f9fbf6;min-width:0}
+.access-text{min-width:0;flex:1}.access-text strong{display:block;font-size:12px;overflow-wrap:anywhere}.access-text small{display:block;color:#62756b;font-size:10px;line-height:1.6;margin-top:4px;overflow-wrap:anywhere}
+.access-actions{display:flex;gap:6px;flex-wrap:wrap}
+.access-action{border:1px solid #a5bca9;border-radius:9px;background:#e9f4e5;color:#23482e;padding:10px 12px;font-size:11px;font-weight:700}
+.access-action:hover{background:#d4edcf}.access-action:disabled{opacity:.55;cursor:wait}
+@media(max-width:780px){.access-row{display:block}.access-actions{margin-top:12px}.access-action{font-size:10px;padding:9px}}
