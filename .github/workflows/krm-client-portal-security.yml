@@ -1,0 +1,55 @@
+name: KRM Client Portal Security CI
+
+on:
+  push:
+    paths:
+      - 'client-portal/**'
+      - '.github/workflows/krm-client-portal-security.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: testpassword-only
+          POSTGRES_DB: krm_portal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d krm_portal_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    defaults:
+      run:
+        working-directory: client-portal
+    env:
+      DATABASE_URL: postgresql://postgres:testpassword-only@localhost:5432/krm_portal_test
+      APP_ORIGIN: http://127.0.0.1:39121
+      NODE_ENV: test
+      LAUNCH_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate source syntax
+        run: |
+          node --check src/app.mjs
+          node --check src/server.mjs
+          node --check src/security.mjs
+          node --check public/app.js
+      - name: Apply PostgreSQL migration
+        run: npm run db:migrate
+      - name: Security and isolation integration tests
+        run: npm test
