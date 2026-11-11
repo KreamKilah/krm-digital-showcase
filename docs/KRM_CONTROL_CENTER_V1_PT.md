@@ -53,17 +53,23 @@ Validar o processo operacional da agência KRM DIGITAL, da ideia do cliente até
 7. Testar acesso sem autorização, fuga de dados, uploads, abuso, operações duplicadas e recuperações.
 
 ## Critérios para validar a demo
-- [ ] Site público acessível e visível em telemóvel e PC
-- [ ] Navegação e filtros
-- [ ] Criar pedido fictício, alterar estado e consultar projeto
-- [ ] Criar, editar, copiar e descarregar proposta fictícia
-- [ ] Adicionar, concluir e remover tarefas
-- [ ] Importar ficheiro TXT fictício do Brief Studio sem rede
-- [ ] Teste de ausência de requests de escrita (POST, etc.) e de persistência
-- [ ] Confirmar que não há conteúdos HTML executados a partir de entradas fictícias
-- [ ] Capturas em quatro larguras e revisão visual
+- [x] Site público acessível e visível em telemóvel e PC
+- [x] Navegação e filtros
+- [x] Criar pedido fictício, alterar estado e consultar projeto
+- [x] Criar, editar, copiar e descarregar proposta fictícia
+- [x] Adicionar, concluir e remover tarefas
+- [x] Importar ficheiro TXT fictício do Brief Studio sem rede
+- [x] Teste de ausência de requests de escrita (POST, etc.) e de persistência
+- [x] Confirmar que não há conteúdos HTML executados a partir de entradas fictícias
+- [x] Capturas em quatro larguras e revisão visual
 
 O GitHub Actions verifica automaticamente estas operações, mas a validação presencial em equipamentos reais e o feedback de pessoas são etapas separadas.
+
+Verificações automáticas em Chromium concluídas com sucesso em 360, 390, 768 e 1440 px (incluindo handoff local de TXT), workflow: https://github.com/KreamKilah/krm-digital-showcase/actions/runs/43117784497.
+
+GitHub Pages da demo confirmado acessível em https://kreamkilah.github.io/krm-digital-showcase/control-center-demo/.
+
+**Limitação:** este teste não substitui observação num telemóvel físico e validação com pessoas reais usando apenas dados inventados. A acessibilidade e segurança de uma futura versão privada exigem auditoria própria.
 
 ## Próximo trabalho recomendado
 Criar critérios de aceitação com um "cliente" fictício e simular um projeto de ponta a ponta. Depois, decidir a arquitetura privada e jurídica necessária para uma futura operação comercial.
