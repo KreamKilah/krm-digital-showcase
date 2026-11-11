@@ -22,6 +22,7 @@ async function ready(){for(let i=0;i<40;i++){try{const r=await fetch(base);if(r.
    await page.waitForFunction(()=>document.documentElement.lang==='pt-PT');
    assert.match(await page.locator('.hero-details p').textContent(),/Não criamos sites/);
    const ptOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+   if(ptOverflow>3){const trouble=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>{const b=el.getBoundingClientRect();return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,55):'',text:el.textContent?.slice(0,35),left:Math.round(b.left),right:Math.round(b.right),scroll:el.scrollWidth,client:el.clientWidth}}).filter(x=>x.right>innerWidth+3&&x.left<innerWidth+25).slice(0,16));console.log('PT OVERFLOW DIAGNOSTICS',width,JSON.stringify(trouble))}
    assert.ok(ptOverflow<=3,'Portuguese document overflow '+ptOverflow+'px at '+width+'px');
    assert.match(await page.locator('#briefSummary').textContent(),/website de estilo/);
    await page.locator('[data-group="industry"][data-value="Immobilien"]').click();
