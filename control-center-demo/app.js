@@ -239,6 +239,44 @@ function addRequest(e){
  state.records.unshift({id,name:name.slice(0,70),category,goal,stage:'new',desc:'Pedido fictício criado manualmente no Control Center para testar o processo.',pages:['Home','Contacto'],languages:['DE'],mood:'A definir',budget:'A definir',progress:0,notes:'Validar necessidades e conteúdos com o cliente fictício.'});
  log('Novo pedido fictício '+id+' criado para '+name+'.');closeModal();view('pipeline');showToast('Pedido de demonstração criado. Não enviado a ninguém.');
 }
+function parseExportedBrief(text){
+ if(!text.startsWith('KRM DIGITAL')||text.length>32768)throw Error('Este ficheiro não é um briefing KRM de demonstração válido.');
+ const fields={};
+ for(const line of text.split(/\r?\n/)){
+  const match=line.match(/^([^:]{2,75}):\s*(.{0,1000})$/);
+  if(match)fields[match[1].trim().toLocaleLowerCase('pt-PT')]=match[2].trim();
+ }
+ const get=(...names)=>names.map(n=>fields[n.toLocaleLowerCase('pt-PT')]).find(Boolean)||'';
+ const name=get('Nome do projeto','Project name','Projektname');
+ const industry=get('Setor','Industry','Branche');
+ const goal=get('Objetivo principal','Main goal','Hauptziel');
+ if(!industry||!goal)throw Error('Faltam o setor ou o objetivo. Exporta o ficheiro no Brief Studio e tenta novamente.');
+ const cleanName=!name||/^(não indicado|not provided|nicht angegeben)$/i.test(name)?'Projeto importado (demo)':name;
+ return {
+  name:cleanName.slice(0,70),
+  category:industry.slice(0,80),
+  goal:goal.slice(0,120),
+  pages:get('Páginas pretendidas','Preferred pages','Gewünschte Seiten').split(',').map(x=>x.trim()).filter(Boolean).slice(0,20),
+  languages:get('Idiomas do site','Site languages','Website-Sprachen').split(',').map(x=>x.trim()).filter(Boolean).slice(0,10),
+  budget:(get('Orçamento indicativo','Indicative budget','Orientierungsbudget')||'A definir').slice(0,120),
+  mood:(get('Estilo visual','Visual style','Designstil')||'A definir').slice(0,90),
+  notes:(get('Requisitos especiais','Special requirements','Besondere Anforderungen','Notas adicionais','Additional notes','Weitere Hinweise')||'Confirmar todos os detalhes de demonstração.').slice(0,850)
+ };
+}
+async function importBrief(file){
+ try{
+  if(!file)return;
+  if(file.size>32768||file.size===0||!/\.txt$/i.test(file.name))throw Error('Usa um ficheiro .txt de teste com menos de 32 KB.');
+  const parsed=parseExportedBrief(await file.text());
+  state.counter+=1;
+  const id='KRM-'+String(state.counter).padStart(3,'0');
+  state.records.unshift({id,...parsed,stage:'new',desc:'Briefing fictício importado localmente. Nenhum dado foi enviado a um servidor.',progress:0});
+  state.status='all';state.search='';$('statusFilter').value='all';$('searchRequests').value='';
+  log('Briefing de demonstração importado localmente: '+parsed.name+'.');
+  view('pipeline');showToast('Briefing importado na memória desta página. Nenhum envio realizado.');
+ }catch(error){showToast(error.message||'Não foi possível importar o ficheiro.');}
+ finally{$('importBriefFile').value='';}
+}
 function reset(){
  if(!confirm('Reiniciar os dados fictícios e apagar todas as alterações desta sessão?'))return;
  state.records=structuredClone(demoRecords);state.tasks=structuredClone(demoTasks);
@@ -259,6 +297,8 @@ $('taskProjectFilter').addEventListener('change',e=>{state.taskFilter=e.target.v
 $('newTaskInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addTask()}});
 $('addTask').addEventListener('click',addTask);
 $('taskList').addEventListener('click',e=>{const b=e.target.closest('[data-remove-task]');if(b)removeTask(b.dataset.removeTask)});
+$('importBriefButton').addEventListener('click',()=>{$('importBriefFile').click()});
+$('importBriefFile').addEventListener('change',e=>importBrief(e.target.files?.[0]));
 $('newRequest').addEventListener('click',openModal);
 $('newRequestForm').addEventListener('submit',addRequest);
 $('modalClose').addEventListener('click',closeModal);
