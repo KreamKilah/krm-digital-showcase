@@ -90,7 +90,7 @@ async function selectProject(id,navigate=false){
  selectedId=id;
  detail=await request('/projects/'+encodeURIComponent(id));
  renderProjects();renderFeature();renderDetail();renderComments();renderApprovals();
- if(me?.role==='admin'&&$('#view-admin')&&!$('#view-admin').hidden)await loadAccess();
+ if(me?.role==='admin'&&$('#view-admin')&&!$('#view-admin').hidden)loadAccess().catch(error=>showNotice(error.message));
  if(navigate)showView('projects');
 }
 function renderDetail(){
