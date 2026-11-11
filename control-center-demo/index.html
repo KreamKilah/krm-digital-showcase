@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0c0d19">
+  <meta name="description" content="KRM DIGITAL Control Center — demonstração de gestão de projetos e propostas com dados fictícios.">
+  <title>KRM DIGITAL® — Control Center / Demo</title>
+  <link rel="icon" href="../brand/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+<div class="demo-ribbon"><span class="ribbon-dot"></span><strong>AMBIENTE DE DEMONSTRAÇÃO</strong><span>Sem login · Dados fictícios · Sem pedidos, contratos ou pagamentos reais</span></div>
+<div class="shell">
+  <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+    <a class="brand" href="../" aria-label="KRM DIGITAL — abrir portefólio">
+      <img src="../brand/krm-horizontal.webp" alt="KRM DIGITAL" width="197" height="54">
+    </a>
+    <div class="workspace-flag"><span class="pulse"></span> WORKSPACE <b>LAB</b></div>
+    <div class="menu-group-label">WORKSPACE / 01</div>
+    <nav id="sideNav" class="side-nav" aria-label="Secções do painel">
+      <button type="button" data-view="overview" class="nav-btn active"><span class="nav-icon">◈</span>Visão geral</button>
+      <button type="button" data-view="pipeline" class="nav-btn"><span class="nav-icon">▥</span>Pedidos <span id="navCount" class="count-pill">0</span></button>
+      <button type="button" data-view="projects" class="nav-btn"><span class="nav-icon">▦</span>Projetos</button>
+      <button type="button" data-view="proposals" class="nav-btn"><span class="nav-icon">▤</span>Propostas</button>
+      <button type="button" data-view="tasks" class="nav-btn"><span class="nav-icon">☑</span>Tarefas</button>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="side-divider"></div>
+    <div class="menu-group-label">ECOSSISTEMA</div>
+    <a href="../brief-builder/" class="side-link" target="_blank" rel="noopener noreferrer">↗ Brief Studio</a>
+    <a href="../client-space-demo/" class="side-link" target="_blank" rel="noopener noreferrer">↗ Client Space (demo)</a>
+    <a href="../" class="side-link" target="_blank" rel="noopener noreferrer">↗ Portefólio KRM</a>
+    <div class="operator"><span class="operator-avatar">K</span><div><strong>KRM / ADMIN DEMO</strong><small>Simulação interna · PT</small></div><span class="operator-status"></span></div>
+  </aside>
+  <div class="app-column">
+    <header class="topbar">
+      <button id="mobileMenu" class="mobile-menu" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Abrir menu">☰</button>
+      <div class="topbar-location"><span>KRM DIGITAL</span><span class="slash">/</span><strong id="currentLocation">Visão geral</strong></div>
+      <div class="topbar-actions">
+        <span class="topbar-live"><span class="pulse"></span> DEMO ONLINE</span>
+        <button id="resetDemo" class="ghost-action" type="button" title="Reiniciar a demonstração">↺ <span>Reiniciar</span></button>
+        <div class="mini-avatar" title="Operador de demonstração">K</div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <section class="page-title-block">
+        <div class="eyebrow"><span class="eyebrow-rule"></span>KRM / STUDIO OPERATIONS <span id="sectionNumber">01—05</span></div>
+        <div class="title-row"><div><h1 id="pageHeading">CONTROL <em>CENTER.</em></h1><p id="pageDescription">Todos os projetos. Uma visão. Controlo total.</p></div><button id="newRequest" class="btn primary" type="button">+ NOVO PEDIDO DEMO</button></div>
+      </section>
+      <div class="notice" role="note"><span class="notice-icon">!</span><p><strong>Modo de demonstração.</strong> Não introduzas informações reais de clientes. As alterações são apenas locais e desaparecem quando atualizas a página; não há backend, emails nem integração com a Client Space.</p><button id="noticeDismiss" type="button" aria-label="Ocultar aviso">×</button></div>
+
+      <section id="view-overview" class="view" aria-label="Visão geral">
+        <div class="metrics">
+          <div class="metric"><span>01 / PEDIDOS</span><strong id="metricOpen">0</strong><small>Por analisar ou em proposta</small><i class="metric-glow"></i></div>
+          <div class="metric"><span>02 / EM PRODUÇÃO</span><strong id="metricBuild">0</strong><small>Projetos em desenvolvimento</small></div>
+          <div class="metric"><span>03 / PROPOSTAS</span><strong id="metricQuotes">0</strong><small>Rascunhos preparados</small></div>
+          <div class="metric"><span>04 / TAREFAS</span><strong id="metricTasks">0</strong><small>Pendentes neste protótipo</small></div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="panel wide"><div class="panel-head"><div><span class="panel-kicker">01 / COMERCIAL</span><h2>Pipeline de pedidos</h2></div><button type="button" class="text-link" data-jump="pipeline">Ver todos ↗</button></div><div id="overviewPipeline" class="overview-pipeline"></div></div>
+          <div class="panel"><div class="panel-head"><div><span class="panel-kicker">02 / ATIVIDADE</span><h2>Últimos movimentos</h2></div></div><div id="overviewActivity" class="activity-list"></div></div>
+          <div class="panel wide"><div class="panel-head"><div><span class="panel-kicker">03 / OPERAÇÃO</span><h2>Projetos em destaque</h2></div><button type="button" class="text-link" data-jump="projects">Ver projetos ↗</button></div><div id="overviewProjects" class="featured-projects"></div></div>
+          <div class="panel panel-dark"><span class="panel-kicker">QUICK ACCESS / 04</span><h2>A ideia transforma-se em projeto.</h2><p>Do briefing à proposta, da aprovação até à Client Space — sempre com revisão humana.</p><button class="btn secondary" type="button" data-jump="proposals">ABRIR PROPOSTAS ↗</button><div class="brand-art" aria-hidden="true">K<span>R</span>M</div></div>
+        </div>
+      </section>
+
+      <section id="view-pipeline" class="view" hidden aria-label="Pipeline de pedidos">
+        <div class="toolbar"><label class="searchbox">⌕ <span class="sr-only">Pesquisar pedidos</span><input id="searchRequests" type="search" placeholder="Pesquisar marca ou referência…" autocomplete="off"></label><label class="select-wrap">Estado <select id="statusFilter"><option value="all">Todos</option><option value="new">Novo</option><option value="review">Análise</option><option value="quoted">Proposta</option><option value="approved">Aprovado</option><option value="build">Produção</option><option value="done">Entregue</option></select></label></div>
+        <div id="pipelineStats" class="pipeline-stats"></div>
+        <div id="pipelineBoard" class="pipeline-board"></div>
+        <p class="footnote">Arrasta não é necessário: abre um pedido para mudar o estado de demonstração, criar tarefas ou preparar uma proposta.</p>
+      </section>
+
+      <section id="view-projects" class="view" hidden aria-label="Projetos">
+        <div class="section-summary"><div><span class="panel-kicker">PORTFÓLIO OPERACIONAL / DEMO</span><h2>Do conceito à entrega.</h2></div><p>Estado, tarefas e próximos passos fictícios. Não existe sincronização com a Client Space real.</p></div>
+        <div id="projectsGrid" class="project-grid"></div>
+      </section>
+
+      <section id="view-proposals" class="view" hidden aria-label="Propostas">
+        <div class="section-summary"><div><span class="panel-kicker">ESTIMATIVAS / DEMONSTRAÇÃO</span><h2>Propostas com controlo humano.</h2></div><p>Valores apenas ilustrativos. Nada é enviado, aprovado comercialmente, faturado ou cobrado.</p></div>
+        <div class="toolbar"><label class="select-wrap">Projeto <select id="proposalProject"></select></label><button id="quoteCreate" class="btn primary" type="button">+ CRIAR RASCUNHO</button></div>
+        <div id="quoteWorkspace" class="quote-workspace"></div>
+      </section>
+
+      <section id="view-tasks" class="view" hidden aria-label="Tarefas">
+        <div class="section-summary"><div><span class="panel-kicker">EXECUÇÃO / DEMO</span><h2>Cada detalhe conta.</h2></div><p>Checklist de trabalho para controlo interno. Os dados voltam ao exemplo inicial ao atualizar.</p></div>
+        <div class="toolbar"><label class="select-wrap">Projeto <select id="taskProjectFilter"><option value="all">Todos os projetos</option></select></label><div class="task-tools"><input id="newTaskInput" type="text" maxlength="120" autocomplete="off" placeholder="Nova tarefa fictícia…"><button id="addTask" class="btn primary" type="button">+ ADICIONAR</button></div></div>
+        <div id="taskSummary" class="task-summary"></div>
+        <div class="panel task-panel"><div id="taskList" class="task-list"></div></div>
+      </section>
+      <footer class="footer"><span>© 2026 KRM DIGITAL® · CONTROL CENTER / DEMO</span><span>SEM DADOS REAIS · SEM LOGIN · SEM ARMAZENAMENTO</span></footer>
+    </main>
+  </div>
+</div>
+<div class="overlay" id="overlay" hidden></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawerTitle" tabindex="-1">
+  <div class="drawer-top"><div><span class="panel-kicker">KRM / FICHA DO PROJETO</span><h2 id="drawerTitle">Projeto</h2></div><button class="drawer-close" id="drawerClose" type="button" aria-label="Fechar ficha">×</button></div>
+  <div id="drawerBody"></div>
+</aside>
+<div class="modal-backdrop" id="modalBackdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><div><span class="panel-kicker">NOVO PEDIDO / DEMO</span><h2 id="modalTitle">Adicionar pedido fictício</h2></div><button id="modalClose" class="drawer-close" type="button" aria-label="Fechar">×</button></div><form id="newRequestForm"><div class="form-field"><label for="demoBrand">Nome de marca fictícia *</label><input id="demoBrand" type="text" minlength="2" maxlength="70" placeholder="Ex.: Café Horizonte" required></div><div class="form-field"><label for="demoCategory">Setor</label><select id="demoCategory"><option value="restaurant">Restauração</option><option value="barber">Barbearia</option><option value="service">Serviços</option><option value="property">Imobiliário</option><option value="other">Outro</option></select></div><div class="form-field"><label for="demoGoal">Objetivo</label><select id="demoGoal"><option value="Presença digital">Presença digital</option><option value="Sistema de reservas">Sistema de reservas</option><option value="Mostrar portefólio">Mostrar portefólio</option><option value="Loja online">Loja online</option></select></div><div class="form-actions"><button id="cancelNew" type="button" class="btn secondary">CANCELAR</button><button type="submit" class="btn primary">CRIAR DEMO ↗</button></div></form></div></div>
+<div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+<script src="app.js" defer></script>
+</body>
+</html>
