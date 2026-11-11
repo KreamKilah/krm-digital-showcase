@@ -48,7 +48,8 @@ check('Three-language translation coverage',()=>{
 check('Every option group has a matching accessible container',()=>{
  for(const group of Object.keys(defs)){
   assert.ok(html.includes('id="'+group+'Options"'),'No container for '+group);
-  assert.ok(html.includes('aria-labelledby="'+group+'Label"'),'Missing group name for '+group);
+  const labelId=group==='siteLang'?'langLabel':group+'Label';
+  assert.ok(html.includes('aria-labelledby="'+labelId+'"'),'Missing group name for '+group);
  }
 });
 check('No duplicate HTML IDs',()=>{
