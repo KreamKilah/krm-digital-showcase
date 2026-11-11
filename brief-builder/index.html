@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./proposal-preview.css">
 </head>
 <body>
 <a class="skip" href="#stageTitle" data-i="skip">Zum Projektformular springen</a>
@@ -87,6 +88,7 @@
           <button id="download" type="button" class="action-btn secondary" data-i="download">ALS .TXT SPEICHERN ↓</button>
         </div>
         <div id="exportStatus" class="status-message" role="status" aria-live="polite"></div>
+        <div class="proposal-entry"><p data-p="entryText">Möchtest du sehen, wie die nächste Phase mit Kontakt- und Anfragebestätigung aussehen könnte?</p><button id="openProposal" type="button" class="action-btn secondary" data-p="open">ANGEBOTSANFRAGE TESTEN ↗</button></div>
       </div>
       <div id="validationError" class="validation" role="alert" hidden></div>
       <div class="stage-actions">
@@ -95,6 +97,54 @@
         <button id="restart" type="button" class="action-btn ghost" data-i="restart" hidden>NEU BEGINNEN ↺</button>
       </div>
     </form>
+
+    <section id="proposalPreview" class="proposal-preview" aria-labelledby="proposalHeading" hidden>
+      <div class="proposal-heading">
+        <span class="kicker" data-p="eyebrow">NEXT / REQUEST PREVIEW · DEMO</span>
+        <h2 id="proposalHeading" data-p="heading" tabindex="-1">DEIN NÄCHSTER SCHRITT.</h2>
+        <p data-p="desc">So könnte deine Angebotsanfrage später aussehen. Alle Eingaben bleiben lokal in diesem Tab und werden nicht übermittelt.</p>
+      </div>
+      <div class="demo-warning" role="note"><strong data-p="demoBadge">DEMO · NICHT AKTIV</strong><span data-p="demoWarning">Keine echte Angebotsanfrage. Keine Speicherung, keine E-Mail, kein Preis und keine Auftragsbestätigung.</span></div>
+      <form id="proposalForm" novalidate>
+        <div class="proposal-mini-header"><span data-p="stepContact">A / KONTAKT</span><span data-p="requiredLegend">* PFLICHTFELD</span></div>
+        <div class="proposal-fields">
+          <div class="field"><label for="leadName" data-p="nameLabel">NAME / ANSPRECHPERSON *</label><input id="leadName" type="text" maxlength="90" autocomplete="off" required placeholder="Name" data-p-placeholder="namePlaceholder"></div>
+          <div class="field"><label for="leadEmail" data-p="emailLabel">E-MAIL-ADRESSE *</label><input id="leadEmail" type="email" inputmode="email" maxlength="180" autocomplete="off" required placeholder="name@example.com" data-p-placeholder="emailPlaceholder"></div>
+          <div class="field"><label for="leadCompany" data-p="companyLabel">UNTERNEHMEN (OPTIONAL)</label><input id="leadCompany" type="text" maxlength="100" autocomplete="off" placeholder="Marke / Unternehmen" data-p-placeholder="companyPlaceholder"></div>
+          <div class="field"><label for="leadCountry" data-p="countryLabel">LAND</label><select id="leadCountry"><option value="DE">Deutschland</option><option value="PT">Portugal</option><option value="ES">España</option><option value="OTHER">Other</option></select></div>
+          <div class="field"><label for="leadCustomerType" data-p="typeLabel">ANFRAGE VON</label><select id="leadCustomerType"><option value="company" data-p="typeCompany">Unternehmen</option><option value="individual" data-p="typeIndividual">Privatperson</option></select></div>
+          <div class="field field-full"><label for="leadMessage" data-p="messageLabel">LETZTE DETAILS (OPTIONAL)</label><textarea id="leadMessage" maxlength="900" rows="3" placeholder="Fragen, Wünsche, offene Punkte..." data-p-placeholder="messagePlaceholder"></textarea></div>
+        </div>
+        <div class="proposal-confirm-understanding">
+          <input type="checkbox" id="leadDemoAck">
+          <label for="leadDemoAck" data-p="ackLabel">Ich verstehe, dass diese Vorschau nichts an KRM sendet und keinen Auftrag auslöst. *</label>
+        </div>
+        <div id="proposalError" class="validation" role="alert" hidden></div>
+        <div class="proposal-actions">
+          <button type="button" id="proposalCancel" class="action-btn ghost" data-p="close">← ZURÜCK ZUM BRIEF</button>
+          <button type="submit" id="proposalGenerate" class="action-btn primary" data-p="generate">VORSCHAU ERSTELLEN ↗</button>
+        </div>
+      </form>
+      <section id="proposalResult" aria-labelledby="proposalResultTitle" hidden>
+        <div class="proposal-mini-header"><span data-p="stepResult">B / ANFRAGE-VORSCHAU</span><span class="not-sent" data-p="notSent">NICHT GESENDET</span></div>
+        <h3 id="proposalResultTitle" data-p="resultHeading">SO KÖNNTE DEINE ANFRAGE AUSSEHEN.</h3>
+        <div id="proposalSummary" class="proposal-summary"></div>
+        <div class="proposal-lifecycle" aria-label="Example of project lifecycle">
+          <div><span class="p-dot"></span><strong data-p="life1">Anfrage vorbereiten</strong><small data-p="life1sub">Nur Vorschau</small></div>
+          <div><span class="p-dot"></span><strong data-p="life2">KRM prüft die Anfrage</strong><small data-p="life2sub">Später / manuell</small></div>
+          <div><span class="p-dot"></span><strong data-p="life3">Individuelles Angebot</strong><small data-p="life3sub">Preis und Zeitplan</small></div>
+          <div><span class="p-dot"></span><strong data-p="life4">Bestätigung & Client Space</strong><small data-p="life4sub">Erst nach Vereinbarung</small></div>
+        </div>
+        <div class="sample-email"><span class="kicker" data-p="mailTitle">BEISPIEL / AUTOMATISCHE EINGANGSBESTÄTIGUNG</span><p data-p="mailWarning">Nur Textvorschau. Es wurde keine E-Mail versendet.</p><div id="proposalEmail" class="sample-email-body"></div></div>
+        <div class="proposal-actions">
+          <button id="proposalCopy" type="button" class="action-btn primary" data-p="copyRequest">ENTWURF KOPIEREN ↗</button>
+          <button id="proposalDownload" type="button" class="action-btn secondary" data-p="downloadRequest">ALS .TXT SPEICHERN ↓</button>
+          <button id="proposalBack" type="button" class="action-btn ghost" data-p="edit">BEARBEITEN ←</button>
+        </div>
+        <div id="proposalStatus" class="status-message" role="status" aria-live="polite"></div>
+      </section>
+      <p class="proposal-privacy" data-p="privacy">Zur echten Aktivierung benötigen wir noch einen sicheren Server, Datenschutzinformationen, Spam-Schutz und ein geprüftes Rechnungs-/Vertragsverfahren.</p>
+    </section>
   </section>
   <aside class="sidebar" aria-label="Live project preview">
     <div class="sidebar-inner">
@@ -112,5 +162,6 @@
 </main>
 <footer><div class="footer-logo">KRM<span>®</span> DIGITAL</div><p data-i="footerNote">FIKTIVES KONZEPT-TOOL / KEINE ANFRAGE ODER ZAHLUNG</p><a href="../" data-i="footerBack">ZURÜCK ZUM PORTFOLIO ↗</a></footer>
 <script src="./app.js" defer></script>
+<script src="./proposal-preview.js" defer></script>
 </body>
 </html>
