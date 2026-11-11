@@ -21,6 +21,8 @@ async function ready(){for(let i=0;i<40;i++){try{const r=await fetch(base);if(r.
    await page.locator('[data-lang="pt"]').click();
    await page.waitForFunction(()=>document.documentElement.lang==='pt-PT');
    assert.match(await page.locator('.hero-details p').textContent(),/Não criamos sites/);
+   const ptOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+   assert.ok(ptOverflow<=3,'Portuguese document overflow '+ptOverflow+'px at '+width+'px');
    assert.match(await page.locator('#briefSummary').textContent(),/website de estilo/);
    await page.locator('[data-group="industry"][data-value="Immobilien"]').click();
    assert.match(await page.locator('#briefSummary').textContent(),/imobiliário/);
@@ -29,6 +31,8 @@ async function ready(){for(let i=0;i<40;i++){try{const r=await fetch(base);if(r.
    await page.locator('[data-lang="en"]').click();
    await page.waitForFunction(()=>document.documentElement.lang==='en');
    assert.match(await page.locator('.hero-details p').textContent(),/forgettable websites/);
+   const enOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+   assert.ok(enOverflow<=3,'English document overflow '+enOverflow+'px at '+width+'px');
    assert.match(await page.locator('#briefSummary').textContent(),/real estate/);
    await page.locator('[data-site="orla"]').click();
    await page.waitForFunction(()=>document.querySelector('#labDescription').textContent.includes('restaurant concept'));
@@ -46,7 +50,7 @@ async function ready(){for(let i=0;i<40;i++){try{const r=await fetch(base);if(r.
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
    assert.ok(overflow<=3,'Horizontal document overflow '+overflow+'px at '+width+'px');
    assert.deepEqual(errors,[]);
-   reports.push({width,pass:true,overflow});
+   reports.push({width,pass:true,overflow,ptOverflow,enOverflow});
    await context.close();
   }
   console.log('KRM multilingual browser QA:',JSON.stringify(reports));
