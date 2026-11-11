@@ -253,5 +253,14 @@ $('download').addEventListener('click',downloadBrief);
 $('restart').addEventListener('click',resetBrief);
 $('briefForm').addEventListener('submit',e=>e.preventDefault());
 try{const saved=localStorage.getItem('krm-site-language');if(['de','pt','en'].includes(saved))state.lang=saved}catch(err){}
+try {
+  const params=new URLSearchParams(location.search);
+  const industry={Gastronomie:'restaurant',Automotive:'automotive',Lifestyle:'services',Immobilien:'property'};
+  const mood={Editorial:'editorial',Luxury:'luxury',Minimal:'minimal',Bold:'bold'};
+  const goal={Markenauftritt:'presence',Buchungsablauf:'booking',Produktpräsentation:'showcase'};
+  if(industry[params.get('industry')])state.industry=industry[params.get('industry')];
+  if(mood[params.get('mood')])state.mood=mood[params.get('mood')];
+  if(goal[params.get('goal')])state.goal=goal[params.get('goal')];
+}catch(err){}
 translate();renderStage();
 })();
