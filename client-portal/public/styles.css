@@ -99,3 +99,13 @@ html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--te
 .access-action{border:1px solid #a5bca9;border-radius:9px;background:#e9f4e5;color:#23482e;padding:10px 12px;font-size:11px;font-weight:700}
 .access-action:hover{background:#d4edcf}.access-action:disabled{opacity:.55;cursor:wait}
 @media(max-width:780px){.access-row{display:block}.access-actions{margin-top:12px}.access-action{font-size:10px;padding:9px}}
+
+/* Multi-factor authentication: recovery codes are shown once, never sent to any third party. */
+.secondary-action{background:transparent;color:#325d3d;border:1px solid #a7c1a7;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:700}
+.secondary-action:hover{background:#eff7ea}
+.recovery-modal{max-width:min(92vw,560px);padding:31px;border:2px solid #2f5335;border-radius:18px;background:#fff;color:#213329;box-shadow:0 35px 110px #0f231b66}
+.recovery-modal::backdrop{background:#0c1815e0;backdrop-filter:blur(10px)}
+.recovery-modal h2{font:700 clamp(32px,6vw,49px)/1.06 var(--mono);letter-spacing:-.07em;margin:0 0 19px}
+.recovery-modal pre{display:block;margin:25px 0;background:#e8f6d8;padding:20px;border:1px dashed #87a68e;border-radius:12px;color:#18291e;font-size:15px;line-height:1.95;letter-spacing:.09em;white-space:pre-wrap;overflow-wrap:anywhere}
+.recovery-modal .primary{width:100%;justify-content:center}
+@media(max-width:560px){.recovery-modal{padding:21px}.recovery-modal pre{font-size:12px;letter-spacing:.05em}}
