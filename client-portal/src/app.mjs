@@ -201,6 +201,54 @@ export function createApp(db,{origin=process.env.APP_ORIGIN||'http://localhost:3
   if(!q.rowCount)return give(res,404,'Client not found, project not found, or already assigned');
   await audit(req.auth.id,req.params.id,'client_assigned',{email});res.status(201).json({ok:true});
  }));
+
+ // Administrative access controls. Never derive project membership from client-supplied role data.
+ app.get('/api/admin/projects/:id/access',authed,admin,requireId,asyncRoute(async(req,res)=>{
+  const exists=await db.query('SELECT 1 FROM projects WHERE id=$1',[req.params.id]);
+  if(!exists.rowCount)return give(res,404,'Project not found');
+  const [members,invites]=await Promise.all([
+   db.query("SELECT u.id,u.display_name,u.email,u.active FROM project_members m JOIN users u ON u.id=m.user_id WHERE m.project_id=$1 AND u.role='client' ORDER BY u.created_at,u.id",[req.params.id]),
+   db.query('SELECT email,created_at,expires_at FROM invitations WHERE project_id=$1 AND accepted_at IS NULL AND expires_at>now() ORDER BY created_at DESC',[req.params.id])
+  ]);
+  res.json({members:members.rows,pendingInvitations:invites.rows});
+ }));
+ // Revocation is effective on the very next request: every project read/write checks membership.
+ app.delete('/api/admin/projects/:id/members/:userId',sameOrigin,authed,csrf,admin,requireId,asyncRoute(async(req,res)=>{
+  if(!validId(req.params.userId))return give(res,400,'Invalid client id');
+  const q=await db.query("DELETE FROM project_members m USING users u WHERE m.project_id=$1 AND m.user_id=$2 AND u.id=m.user_id AND u.role='client' RETURNING m.user_id",[req.params.id,req.params.userId]);
+  if(!q.rowCount)return give(res,404,'Project membership not found');
+  await audit(req.auth.id,req.params.id,'membership_revoked',{clientId:req.params.userId});
+  res.json({ok:true});
+ }));
+ app.delete('/api/admin/projects/:id/invitations',sameOrigin,authed,csrf,admin,requireId,asyncRoute(async(req,res)=>{
+  const email=normalizeEmail(req.body?.email);
+  if(!email)return give(res,400,'Valid email required');
+  const q=await db.query('DELETE FROM invitations WHERE project_id=$1 AND email=$2 AND accepted_at IS NULL RETURNING token_hash',[req.params.id,email]);
+  if(!q.rowCount)return give(res,404,'Pending invitation not found');
+  await audit(req.auth.id,req.params.id,'invitation_revoked',{email});
+  res.json({ok:true,revoked:q.rowCount});
+ }));
+ // Disabling a client also revokes every active session in the same database transaction.
+ // Admin accounts deliberately cannot be disabled through this endpoint.
+ app.post('/api/admin/clients/:id/status',sameOrigin,authed,csrf,admin,requireId,asyncRoute(async(req,res)=>{
+  if(typeof req.body?.active!=='boolean')return give(res,400,'Boolean active state required');
+  const active=req.body.active,client=await db.connect();
+  try{
+   await client.query('BEGIN');
+   const q=await client.query("UPDATE users SET active=$1 WHERE id=$2 AND role='client' RETURNING id,email",[active,req.params.id]);
+   if(!q.rowCount){await client.query('ROLLBACK');return give(res,404,'Client not found')}
+   if(!active)await client.query('DELETE FROM sessions WHERE user_id=$1',[req.params.id]);
+   await client.query('INSERT INTO audit_events(id,actor_id,event,details) VALUES($1,$2,$3,$4)',[uuid(),req.auth.id,active?'client_enabled':'client_disabled',JSON.stringify({clientId:req.params.id})]);
+   await client.query('COMMIT');res.json({ok:true,active});
+  }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
+ }));
+ // Self-service emergency session revocation across browsers/devices.
+ app.post('/api/me/sessions/revoke-all',sameOrigin,authed,csrf,asyncRoute(async(req,res)=>{
+  await db.query('DELETE FROM sessions WHERE user_id=$1',[req.auth.id]);
+  res.setHeader('Set-Cookie',sessionCookie('',0));
+  res.json({ok:true});
+ }));
+
  app.use('/api',(req,res)=>give(res,404,'Not found'));
  app.use(express.static(appDir,{index:'index.html',maxAge:'10m',dotfiles:'deny',fallthrough:false}));
  app.use((err,req,res,next)=>{
