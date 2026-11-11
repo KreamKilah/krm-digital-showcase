@@ -269,6 +269,6 @@ $('mobileMenu').addEventListener('click',()=>{$('sidebar').classList.contains('o
 $('overlay').addEventListener('click',()=>{if(state.selected)closeDrawer();else closeMobile()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('modalBackdrop').hidden)closeModal();else if(state.selected)closeDrawer();else if($('sidebar').classList.contains('open'))closeMobile()}});
 $('resetDemo').addEventListener('click',reset);
-$('noticeDismiss').addEventListener('click',()=>{$('.notice').hidden=true});
+$('noticeDismiss').addEventListener('click',()=>{document.querySelector('.notice').hidden=true});
 syncStats();view('overview');
 })();
