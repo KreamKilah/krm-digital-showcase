@@ -105,7 +105,7 @@ async function checkOverflow(page,width){
     'Estilo visual: Editorial',
     'Orçamento indicativo: 300–600 €',
     'CONCEITO NÃO VINCULATIVO'
-   ].join('\\n');
+   ].join('\n');
    await page.locator('#importBriefFile').setInputFiles({name:'KRM-demo.txt',mimeType:'text/plain',buffer:Buffer.from(sampleBrief)});
    assert.equal(await page.locator('.lane-card').count(),6);
    assert.match(await page.locator('#pipelineBoard').textContent(),/Café Teste/);
