@@ -32,7 +32,7 @@ function translate(){
   for(const attr of ['aria-label','title','alt','placeholder']){
    if(!el.hasAttribute(attr))continue;
    const present=el.getAttribute(attr);
-   if(!(attr in saved)||present!==tr(saved[attr]))saved[attr]=present;
+   if(!(attr in saved)||![saved[attr],dictionary.pt[saved[attr]],dictionary.en[saved[attr]]].includes(present))saved[attr]=present;
    const wanted=tr(saved[attr]);if(present!==wanted)el.setAttribute(attr,wanted);
   }
  });
