@@ -46,7 +46,7 @@ try{
    await page.locator('#mfa-login-code').fill('123456');
    await page.locator('#mfa-login-form button[type=submit]').click();
    await page.locator('#app-screen').waitFor({state:'visible'});
-   await page.locator('#project-count').getByText('1 projeto(s)').waitFor({timeout:10000});
+   await page.waitForFunction(()=>document.querySelector('#project-count')?.textContent==='1 projeto(s)',{timeout:10000});
    await page.screenshot({path:'ui-evidence/workspace-'+width+'.png'});
    const geometry=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
    if(geometry.scrollWidth>width+3)throw Error('Horizontal overflow: '+JSON.stringify(geometry));
