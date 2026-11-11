@@ -58,6 +58,7 @@
    <button type="button" data-view="updates">✎ <span>Comentários</span></button>
    <button type="button" data-view="approvals">✓ <span>Aprovações</span></button>
    <button type="button" data-view="files">▣ <span>Ficheiros</span></button>
+   <button type="button" data-view="account">♧ <span>Segurança</span></button>
   </nav>
   <div class="side-grow"></div>
   <div class="sidebar-help"><div class="eyebrow">SUPORTE</div><p>Os teus projetos e dados estão separados dos restantes clientes.</p><small>Sem pagamentos ou uploads nesta fase.</small></div>
@@ -105,6 +106,27 @@
    </section>
    <section id="view-files" class="view" hidden>
     <article class="panel"><div class="eyebrow">ENTREGA SEGURA</div><h2>Ficheiros e documentos</h2><p class="bodycopy">Esta área será ligada a armazenamento privado, com permissões por projeto. Uploads, faturas e pagamentos estão desativados até concluirmos a segurança e o controlo de acessos.</p></article>
+   </section>
+
+   <section id="view-account" class="view" hidden>
+    <div class="two-col">
+     <article class="panel">
+      <div class="panelhead"><h2>Segurança da conta</h2><span>PRIVADO</span></div>
+      <p class="bodycopy">Para mudar a palavra-passe tens de confirmar a atual. Por segurança, a alteração termina todas as sessões, neste e noutros dispositivos.</p>
+      <form id="change-password" class="formblock">
+       <label for="current-password">Palavra-passe atual</label><input id="current-password" type="password" autocomplete="current-password" minlength="12" required>
+       <label for="new-password">Nova palavra-passe (mínimo 12 caracteres)</label><input id="new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+       <button type="submit" class="primary">Alterar e terminar sessões ↗</button>
+      </form>
+     </article>
+     <article class="panel">
+      <div class="panelhead"><h2>Sessões ativas</h2><span>SEGURANÇA</span></div>
+      <p class="bodycopy">Se suspeitas que outra pessoa tem acesso à tua conta, termina todas as sessões imediatamente e volta a entrar com segurança.</p>
+      <button type="button" class="primary" id="account-revoke-all" style="margin-top:18px">Sair de todos os dispositivos ↗</button>
+      <div class="section-divider"></div>
+      <p class="bodycopy">Ainda não existe recuperação automática de palavras-passe nem autenticação de dois fatores ativa. A fase de produção continua bloqueada até essas proteções serem implementadas e testadas.</p>
+     </article>
+    </div>
    </section>
    <section id="view-admin" class="view" hidden>
     <div class="two-col">
