@@ -54,6 +54,7 @@ function showView(view){
  $('#workspace-intro').textContent=(
   {overview:'Todas as etapas, decisões e atualizações organizadas.',projects:'Acompanha as versões e o desenvolvimento de cada projeto.',updates:'Mensagens ligadas ao projeto correto.',approvals:'Verifica e aprova versões com histórico.',files:'Documentos e entregáveis protegidos por permissões.',admin:'Criar projetos e gerir o progresso dos clientes.'}
  )[view];
+ if(view==='admin')loadAccess().catch(error=>showNotice(error.message));
  window.scrollTo(0,0);
 }
 $$('[data-view]').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
@@ -89,6 +90,7 @@ async function selectProject(id,navigate=false){
  selectedId=id;
  detail=await request('/projects/'+encodeURIComponent(id));
  renderProjects();renderFeature();renderDetail();renderComments();renderApprovals();
+ if(me?.role==='admin'&&$('#view-admin')&&!$('#view-admin').hidden)await loadAccess();
  if(navigate)showView('projects');
 }
 function renderDetail(){
@@ -169,6 +171,11 @@ $('#invite-form').addEventListener('submit',event=>{
  });
 });
 $('#signout').addEventListener('click',async()=>{try{await request('/logout',{method:'POST',body:{}})}catch{}showAuth();showNotice('Sessão terminada.');});
+$('#revoke-sessions').addEventListener('click',async()=>{
+ if(!confirm('Queres terminar todas as sessões ativas da tua conta, neste e noutros dispositivos?'))return;
+ try{await request('/me/sessions/revoke-all',{method:'POST',body:{}});showAuth();showNotice('Todas as sessões foram revogadas no servidor.')}catch(e){showNotice(e.message)}
+});
+
 $('#comment-form').addEventListener('submit',event=>{
  event.preventDefault();
  submit(event.currentTarget,async()=>{
@@ -183,6 +190,57 @@ $('#create-project').addEventListener('submit',event=>{
   form.reset();await loadProjects();showNotice('Projeto criado.');
  });
 });
+
+function accessButton(label,callback){
+ const btn=node('button','access-action',label);btn.type='button';
+ btn.addEventListener('click',async()=>{
+  btn.disabled=true;
+  try{await callback();await loadAccess()}catch(e){showNotice(e.message)}finally{btn.disabled=false}
+ });
+ return btn;
+}
+async function loadAccess(){
+ if(!me||me.role!=='admin')return;
+ const members=$('#access-members'),invites=$('#access-invites'),status=$('#access-status');
+ if(!members||!invites)return;
+ clear(members);clear(invites);
+ if(!selectedId){status.textContent='Seleciona um projeto para ver os acessos.';return}
+ status.textContent='A verificar permissões do projeto…';
+ const response=await request('/admin/projects/'+encodeURIComponent(selectedId)+'/access');
+ const clients=response.members||[],pending=response.pendingInvitations||[];
+ status.textContent=clients.length+' cliente(s) com acesso · '+pending.length+' convite(s) pendente(s)';
+ if(!clients.length)members.append(node('p','bodycopy','Ainda não há clientes com acesso a este projeto.'));
+ for(const client of clients){
+  const row=node('div','access-row');const info=node('div','access-text');
+  info.append(node('strong',null,client.display_name),node('small',null,client.email+(client.active?' · Ativo':' · Conta desativada')));
+  const controls=node('div','access-actions');
+  controls.append(accessButton('Retirar do projeto',async()=>{
+   if(!confirm('Revogar imediatamente o acesso de '+client.email+' a este projeto?'))return;
+   await request('/admin/projects/'+encodeURIComponent(selectedId)+'/members/'+encodeURIComponent(client.id),{method:'DELETE',body:{}});
+   showNotice('Acesso ao projeto revogado imediatamente.');
+  }));
+  controls.append(accessButton(client.active?'Desativar conta':'Reativar conta',async()=>{
+   const message=client.active?'Desativar '+client.email+' em TODOS os projetos e terminar as suas sessões?':'Reativar a conta de '+client.email+'?';
+   if(!confirm(message))return;
+   await request('/admin/clients/'+encodeURIComponent(client.id)+'/status',{method:'POST',body:{active:!client.active}});
+   showNotice('Estado da conta atualizado no servidor.');
+  }));
+  row.append(info,controls);members.append(row);
+ }
+ if(!pending.length)invites.append(node('p','bodycopy','Sem convites pendentes.'));
+ for(const invite of pending){
+  const row=node('div','access-row');const info=node('div','access-text');
+  info.append(node('strong',null,invite.email),node('small',null,'Expira: '+new Date(invite.expires_at).toLocaleString('pt-PT')));
+  row.append(info,accessButton('Cancelar convite',async()=>{
+   if(!confirm('Cancelar imediatamente o convite para '+invite.email+'?'))return;
+   await request('/admin/projects/'+encodeURIComponent(selectedId)+'/invitations',{method:'DELETE',body:{email:invite.email}});
+   showNotice('Convite cancelado. O link já não pode criar uma conta.');
+  }));
+  invites.append(row);
+ }
+}
+$('#access-refresh').addEventListener('click',()=>loadAccess().catch(e=>showNotice(e.message)));
+
 $('#invite-customer').addEventListener('submit',event=>{
  event.preventDefault();submit(event.currentTarget,async()=>{
   if(!selectedId)throw Error('Cria ou seleciona primeiro um projeto.');
