@@ -53,3 +53,16 @@ jobs:
         run: npm run db:migrate
       - name: Security and isolation integration tests
         run: npm test
+      - name: Install browser test runner
+        run: |
+          npm install --no-save playwright --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Check private login MFA and admin UI on mobile and desktop
+        run: node tests/ui-smoke.mjs
+      - name: Save UI smoke screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krm-private-portal-ui-qa
+          path: client-portal/ui-evidence/
+          retention-days: 7
