@@ -15,7 +15,7 @@ Transformar o portefólio KRM num sistema organizado de captação, proposta, pr
 
 ## Roadmap de implementação (por fases)
 - [ ] **Fase 0 — Fundação legal e operações**: confirmar enquadramento (Gewerbe ou Freiberufler), registo fiscal, eventual Kleinunternehmerregelung, dados de faturação, conta bancária, impressum, política de privacidade, direitos de conteúdos, termos contratuais, política de cancelamento aplicável e conservação de documentos. Validar pontos fiscais com contabilista/Finanzamt.
-- [ ] **Fase 1 — Site multilingue**: selecionar DE (base), PT-PT e EN; tradução integral de navegação, textos, Experience Lab, gerador, mensagens de erro, resumo copiável e avisos. Guardar idioma escolhido e testar em telemóvel / computador.
+- [x] **Fase 1 — Site multilingue**: selecionar DE (base), PT-PT e EN; tradução integral de navegação, textos, Experience Lab, gerador, mensagens de erro, resumo copiável e avisos. Guardar idioma escolhido e testar em telemóvel / computador.
 - [ ] **Fase 2 — Brief Builder melhorado**: setor, objetivo, estilo, páginas, funcionalidades, exemplos de sites, marca/logótipo, conteúdos e imagens, domínio, idiomas, prazo, orçamento indicativo. Diferenciar obrigatórios de opcionais. Pré-visualização conceptual explicitamente não vinculativa.
 - [ ] **Fase 3 — Pedido de proposta**: botão “Quero uma proposta”; formulário com nome/empresa, e-mail, dados do projeto, aceitação informada da política de privacidade; validação e anti-spam; confirmação de receção com referência interna (ex. KRM-REQ-0001), e-mail de receção **sem prometer aceitação**.
 - [ ] **Fase 4 — Análise e orçamento**: análise humana, clarificações, proposta com âmbito, entregáveis, número de revisões, prazo estimado, preço, extras, custos recorrentes (domínio, alojamento, manutenção), responsabilidades por textos/imagens, critérios de aceitação, validade e condições de pagamento.
@@ -65,3 +65,11 @@ Transformar o portefólio KRM num sistema organizado de captação, proposta, pr
 - Portal federal de criação de empresas (impressum e privacidade): https://www.existenzgruendungsportal.de/Redaktion/DE/BMWK-Infopool/Antworten/E-Business/Recht-AGB/Webseite-Informationspflichten
 
 **Nota:** plano técnico/comercial; não substitui aconselhamento jurídico ou contabilístico específico.
+
+## Progresso confirmado — 11/11/2026
+- Implementada seleção DE / PT-PT / EN no portefólio principal (ficheiros `index.html` e `i18n.js`).
+- Traduções da interface pública, secções do portefólio, Experience Lab e gerador de brief; texto do resumo e cópia seguem o idioma selecionado.
+- Idioma guardado no navegador. A navegação e o gerador não enviam dados do visitante.
+- Teste automatizado Playwright/Chromium aprovado nas larguras 360, 390, 768 e 1440 px, com verificação de alterações DE/PT/EN, estado do gerador e ausência de scroll horizontal. Workflow: https://github.com/KreamKilah/krm-digital-showcase/actions/runs/43093755895
+- Limitação: traduções aplicam-se à página principal do portefólio, **não** às páginas independentes NOVA, VANTA, ORLA ou à Client Space. Validação visual manual no dispositivo do cliente continua recomendada.
+- Próxima execução: Fase 2 (brief mais detalhado), sem envio real de dados ou faturação até cumprir requisitos legais.
