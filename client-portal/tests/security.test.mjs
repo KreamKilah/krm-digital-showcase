@@ -1,6 +1,8 @@
 import test,{before,after} from 'node:test';
 import assert from 'node:assert/strict';
 import pg from 'pg';
+import { randomBytes } from 'node:crypto';
+import { decryptSecret, totpForStep, matchTotp, normalizeRecovery } from '../src/mfa.mjs';
 import { createApp } from '../src/app.mjs';
 import { uuid, hashPassword, verifyPassword, normalizeEmail, parseCookies, COOKIE, safeHttpUrl, validatePassword } from '../src/security.mjs';
 
@@ -28,6 +30,7 @@ async function mutate(url,auth,body,method='POST'){
  return request(url,{method,cookie:auth.cookie,csrf:auth.csrf,body});
 }
 before(async()=>{
+ process.env.MFA_ENCRYPTION_KEY=randomBytes(32).toString('base64url');
  db=new pg.Pool({connectionString:process.env.DATABASE_URL,max:8});
  await qs('TRUNCATE TABLE audit_events,login_failures,invitations,approvals,comments,milestones,project_members,projects,sessions,users RESTART IDENTITY CASCADE');
  admin=uuid();clientA=uuid();clientB=uuid();projectA=uuid();projectB=uuid();
@@ -197,6 +200,56 @@ test('password change requires current credentials and revokes all previous sess
  assert.equal((await request('/api/login',{method:'POST',body:{email:'beta@example.test',password:pass}})).status,401);
  authB=await login('beta@example.test',newPass);
  assert.equal((await request('/api/projects/'+projectB,{cookie:authB.cookie})).status,200);
+});
+
+
+test('MFA enrollment encrypts secret and enforces a second factor before admin login',async()=>{
+ const owner=uuid(),email='mfaowner@example.test';
+ await qs("INSERT INTO users(id,email,display_name,role,password_hash) VALUES($1,$2,$3,'admin',$4)",[owner,email,'MFA owner',await hashPassword(pass)]);
+ const initial=await login(email);
+ const wrong=await mutate('/api/me/mfa/setup',initial,{currentPassword:'not the password'});
+ assert.equal(wrong.status,403);
+ const setup=await mutate('/api/me/mfa/setup',initial,{currentPassword:pass});
+ assert.equal(setup.status,200);const details=await parsed(setup);
+ assert.match(details.secret,/^[A-Z2-7]{32}$/);
+ assert.match(details.otpauthUri,/^otpauth:\/\/totp\//);
+ const dbFactor=await qs('SELECT secret_ciphertext,enabled FROM mfa_factors WHERE user_id=$1',[owner]);
+ assert.equal(dbFactor.rows[0].enabled,false);
+ assert.ok(!dbFactor.rows[0].secret_ciphertext.includes(details.secret));
+ const secret=decryptSecret(dbFactor.rows[0].secret_ciphertext),currentStep=Math.floor(Date.now()/30000);
+ const first=totpForStep(secret,currentStep);
+ assert.equal(matchTotp(secret,first,{now:Date.now(),lastStep:-1}),currentStep);
+ const confirm=await mutate('/api/me/mfa/confirm',initial,{code:first});
+ assert.equal(confirm.status,200);
+ const confirmed=await parsed(confirm);
+ assert.equal(confirmed.reauthenticate,true);assert.equal(confirmed.recoveryCodes.length,8);
+ assert.equal((await request('/api/me',{cookie:initial.cookie})).status,401);
+ const loginResponse=await request('/api/login',{method:'POST',body:{email,password:pass}});
+ assert.equal(loginResponse.status,200);
+ const challenge=(await parsed(loginResponse));assert.equal(challenge.mfaRequired,true);
+ assert.ok(!loginResponse.headers.get('set-cookie'));
+ const invalid=await request('/api/login/mfa',{method:'POST',body:{challengeToken:challenge.challengeToken,code:'123'}});
+ assert.equal(invalid.status,400);
+ const next=totpForStep(secret,currentStep+1);
+ const verified=await request('/api/login/mfa',{method:'POST',body:{challengeToken:challenge.challengeToken,code:next}});
+ assert.equal(verified.status,200);
+ const auth=(await parsed(verified));assert.equal(auth.user.email,email);assert.equal(auth.user.role,'admin');
+ const mfaCookie=verified.headers.get('set-cookie').split(';')[0];
+ assert.equal((await request('/api/me',{cookie:mfaCookie})).status,200);
+ const secondLogin=await request('/api/login',{method:'POST',body:{email,password:pass}});
+ const secondChallenge=(await parsed(secondLogin)).challengeToken;
+ const replay=await request('/api/login/mfa',{method:'POST',body:{challengeToken:secondChallenge,code:next}});
+ assert.equal(replay.status,401);
+ const code=confirmed.recoveryCodes[0];
+ assert.ok(normalizeRecovery(code));
+ const recovered=await request('/api/login/mfa',{method:'POST',body:{challengeToken:secondChallenge,code}});
+ assert.equal(recovered.status,200);
+ const remaining=await qs('SELECT count(*)::int AS n FROM mfa_recovery_codes WHERE user_id=$1',[owner]);
+ assert.equal(remaining.rows[0].n,7);
+ const thirdLogin=await request('/api/login',{method:'POST',body:{email,password:pass}});
+ const thirdChallenge=(await parsed(thirdLogin)).challengeToken;
+ const reuse=await request('/api/login/mfa',{method:'POST',body:{challengeToken:thirdChallenge,code}});
+ assert.equal(reuse.status,401);
 });
 
 test('launch gate is closed by default in production mode',async()=>{
