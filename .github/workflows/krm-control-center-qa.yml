@@ -1,0 +1,36 @@
+name: KRM Control Center QA
+on:
+  push:
+    paths:
+      - "control-center-demo/**"
+      - "tests/control-center-smoke.cjs"
+      - ".github/workflows/krm-control-center-qa.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  control-center:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check source syntax
+        run: |
+          node --check control-center-demo/app.js
+          node --check tests/control-center-smoke.cjs
+      - name: Install browser
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test Control Center on mobile and desktop
+        run: node tests/control-center-smoke.cjs
+      - name: Save QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krm-control-center-screenshots
+          path: qa-control-center/*.png
+          if-no-files-found: warn
+          retention-days: 7
