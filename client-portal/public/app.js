@@ -1,6 +1,6 @@
 const $=sel=>document.querySelector(sel);
 const $$=sel=>[...document.querySelectorAll(sel)];
-const labels={overview:'VISÃO GERAL',projects:'PROJETOS',updates:'COMENTÁRIOS',approvals:'APROVAÇÕES',files:'FICHEIROS',admin:'ADMINISTRAÇÃO'};
+const labels={overview:'VISÃO GERAL',projects:'PROJETOS',updates:'COMENTÁRIOS',approvals:'APROVAÇÕES',files:'FICHEIROS',account:'SEGURANÇA',admin:'ADMINISTRAÇÃO'};
 const stages={briefing:'Briefing',design:'Design',development:'Desenvolvimento',review:'Revisão',delivered:'Entregue'};
 const phases={planned:'Planeado',active:'Em curso',done:'Concluído'};
 let me=null,csrf='',projects=[],selectedId=null,detail=null,invitationToken=null;
@@ -24,7 +24,7 @@ function showAuth(){
  $('#auth-screen').hidden=false;$('#app-screen').hidden=true;me=null;csrf='';projects=[];selectedId=null;detail=null;
  for(const id of ['#project-list','#milestone-list','#comment-list','#approval-list','#feature-project']){const element=$(id);if(element)element.replaceChildren()}
  for(const id of ['#detail-title','#detail-summary','#account-name','#account-role','#approvalState']){const element=$(id);if(element)element.textContent=''}
- for(const id of ['#login-password','#comment-body','#invite-password','#invite-link']){const element=$(id);if(element)element.value=''}
+ for(const id of ['#login-password','#comment-body','#invite-password','#invite-link','#current-password','#new-password']){const element=$(id);if(element)element.value=''}
  $('#invite-result').hidden=true;$('#project-detail').hidden=true;
 }
 function showInvite(token){
@@ -49,10 +49,10 @@ function showView(view){
  $$('[data-view]').forEach(btn=>btn.classList.toggle('active',btn.dataset.view===view));
  $('#crumb-view').textContent=labels[view];
  $('#workspace-title').textContent=(
-  {overview:'O teu projeto, num só lugar.',projects:'Projetos com transparência.',updates:'Feedback organizado.',approvals:'Decisões e aprovações.',files:'Tudo no seu lugar.',admin:'Gestão KRM DIGITAL.'}
+  {overview:'O teu projeto, num só lugar.',projects:'Projetos com transparência.',updates:'Feedback organizado.',approvals:'Decisões e aprovações.',files:'Tudo no seu lugar.',account:'Segurança da tua conta.',admin:'Gestão KRM DIGITAL.'}
  )[view];
  $('#workspace-intro').textContent=(
-  {overview:'Todas as etapas, decisões e atualizações organizadas.',projects:'Acompanha as versões e o desenvolvimento de cada projeto.',updates:'Mensagens ligadas ao projeto correto.',approvals:'Verifica e aprova versões com histórico.',files:'Documentos e entregáveis protegidos por permissões.',admin:'Criar projetos e gerir o progresso dos clientes.'}
+  {overview:'Todas as etapas, decisões e atualizações organizadas.',projects:'Acompanha as versões e o desenvolvimento de cada projeto.',updates:'Mensagens ligadas ao projeto correto.',approvals:'Verifica e aprova versões com histórico.',files:'Documentos e entregáveis protegidos por permissões.',account:'Altera a palavra-passe e controla as tuas sessões.',admin:'Criar projetos e gerir o progresso dos clientes.'}
  )[view];
  if(view==='admin')loadAccess().catch(error=>showNotice(error.message));
  window.scrollTo(0,0);
@@ -171,9 +171,20 @@ $('#invite-form').addEventListener('submit',event=>{
  });
 });
 $('#signout').addEventListener('click',async()=>{try{await request('/logout',{method:'POST',body:{}})}catch{}showAuth();showNotice('Sessão terminada.');});
-$('#revoke-sessions').addEventListener('click',async()=>{
+async function revokeAllSessions(){
  if(!confirm('Queres terminar todas as sessões ativas da tua conta, neste e noutros dispositivos?'))return;
  try{await request('/me/sessions/revoke-all',{method:'POST',body:{}});showAuth();showNotice('Todas as sessões foram revogadas no servidor.')}catch(e){showNotice(e.message)}
+}
+$('#revoke-sessions').addEventListener('click',revokeAllSessions);
+$('#account-revoke-all').addEventListener('click',revokeAllSessions);
+$('#change-password').addEventListener('submit',event=>{
+ event.preventDefault();
+ submit(event.currentTarget,async()=>{
+  const currentPassword=$('#current-password').value,newPassword=$('#new-password').value;
+  await request('/me/password',{method:'POST',body:{currentPassword,newPassword}});
+  $('#current-password').value='';$('#new-password').value='';
+  showAuth();showNotice('Palavra-passe alterada. Todas as sessões foram terminadas; entra novamente.');
+ });
 });
 
 $('#comment-form').addEventListener('submit',event=>{
