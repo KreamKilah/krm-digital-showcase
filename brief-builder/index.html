@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b17">
+<meta name="description" content="KRM DIGITAL Project Brief Builder — create and export a detailed non-binding website concept.">
+<title>KRM DIGITAL® — Project Brief Studio</title>
+<link rel="icon" href="../brand/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<a class="skip" href="#stageTitle" data-i="skip">Zum Projektformular springen</a>
+<header class="site-header">
+  <a class="brand" href="../" aria-label="KRM DIGITAL — Home"><img src="../brand/krm-horizontal.webp" width="197" height="54" alt="KRM DIGITAL"></a>
+  <div class="header-right">
+    <span class="header-caption" data-i="headerCaption">PROJECT BRIEF STUDIO / 2026</span>
+    <div class="language-switch" role="group" aria-label="Language / Idioma / Sprache">
+      <button type="button" data-lang="de" aria-pressed="true">DE</button>
+      <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="back-site" href="../" data-i="backSite">ZUR WEBSITE ↗</a>
+  </div>
+</header>
+<div class="micro-strip"><span class="signal"></span><span data-i="topNotice">KOSTENLOSER KONZEPT-ENTWURF · KEINE ANFRAGE · KEINE ZAHLUNG</span><span class="micro-right">KRM / STUDIO 02</span></div>
+<main class="layout">
+  <section class="workspace" aria-labelledby="heroHeading">
+    <div class="intro">
+      <span class="kicker" data-i="kicker">01 / VON DER IDEE ZUR RICHTUNG</span>
+      <h1 id="heroHeading"><span data-i="hero1">YOUR IDEA.</span><span class="outline" data-i="hero2">OUR NEXT</span><span class="accent" data-i="hero3">WORLD.</span></h1>
+      <p data-i="heroDesc">Erzähl uns, wie deine digitale Marke aussehen könnte. Fünf kurze Schritte machen aus einer groben Idee ein konkretes Kreativ-Briefing.</p>
+    </div>
+    <div class="step-progress" aria-label="Progress">
+      <div class="progress-head"><span id="stepCount">01 / 05</span><span id="progressLabel">20%</span></div>
+      <div class="progress-track" role="progressbar" aria-label="Brief progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20" id="progressTrack"><div id="progressFill"></div></div>
+    </div>
+    <nav id="stepNav" class="step-nav" aria-label="Brief stages"></nav>
+    <form id="briefForm" novalidate>
+      <div class="stage" data-step="0">
+        <div class="stage-head"><span class="stage-number">01 / 05</span><h2 id="stageTitle" tabindex="-1" data-i="s1title">DIE MARKE.</h2><p data-i="s1desc">Wer bist du und was soll deine Website erreichen? Nur zwei Entscheidungen sind erforderlich.</p></div>
+        <div class="field"><label for="brandName" data-i="brandLabel">Marken- oder Projektname <span class="optional">(optional)</span></label><input id="brandName" name="brandName" type="text" maxlength="80" autocomplete="off" data-ph="brandPh" placeholder="z. B. KRM Studio"><div class="help" data-i="brandHelp">Du kannst den Namen auch später festlegen.</div></div>
+        <div class="field"><h3 id="industryLabel" data-i="industryLabel">01 — BRANCHE <span class="required">* </span></h3><div class="option-grid" id="industryOptions" role="group" aria-labelledby="industryLabel"></div></div>
+        <div class="field"><h3 id="goalLabel" data-i="goalLabel">02 — HAUPTZIEL <span class="required">* </span></h3><div class="option-grid" id="goalOptions" role="group" aria-labelledby="goalLabel"></div></div>
+        <div class="field"><label for="audience" data-i="audienceLabel">Für wen ist die Website? (optional)</label><textarea id="audience" rows="3" maxlength="450" data-ph="audiencePh" placeholder="Wer sind deine idealen Kunden?"></textarea></div>
+      </div>
+      <div class="stage" data-step="1" hidden>
+        <div class="stage-head"><span class="stage-number">02 / 05</span><h2 id="stageTitle2" tabindex="-1" data-i="s2title">DIE ATMOSPHÄRE.</h2><p data-i="s2desc">Wähle eine visuelle Richtung. Alle Angaben können später verfeinert werden.</p></div>
+        <div class="field"><h3 id="moodLabel" data-i="moodLabel">STILRICHTUNG</h3><div class="option-grid" id="moodOptions" role="group" aria-labelledby="moodLabel"></div></div>
+        <div class="field"><h3 id="paletteLabel" data-i="paletteLabel">FARBWELT</h3><div class="option-grid palettes" id="paletteOptions" role="group" aria-labelledby="paletteLabel"></div></div>
+        <div class="field"><label for="references" data-i="referenceLabel">Inspiration / Referenz-Website (optional)</label><input id="references" type="url" inputmode="url" maxlength="320" autocomplete="off" data-ph="referencePh" placeholder="https://example.com"><p class="help" data-i="referenceHelp">Bitte nur einen öffentlich erreichbaren Link eintragen. Keine Zugangsdaten.</p></div>
+        <div class="field"><label for="visualNotes" data-i="visualNotesLabel">Was soll das Design ausstrahlen? (optional)</label><textarea id="visualNotes" maxlength="600" rows="3" data-ph="visualNotesPh" placeholder="Eine prägnante, persönliche Atmosphäre…"></textarea></div>
+      </div>
+      <div class="stage" data-step="2" hidden>
+        <div class="stage-head"><span class="stage-number">03 / 05</span><h2 id="stageTitle3" tabindex="-1" data-i="s3title">DIE ERFAHRUNG.</h2><p data-i="s3desc">Wähle Seiten und Funktionen. Das ist eine Wunschliste, kein bestätigter Leistungsumfang.</p></div>
+        <div class="field"><h3 id="pagesLabel" data-i="pagesLabel">WELCHE SEITEN?</h3><div class="option-grid chips" id="pagesOptions" role="group" aria-labelledby="pagesLabel"></div></div>
+        <div class="field"><h3 id="featuresLabel" data-i="featuresLabel">WELCHE FUNKTIONEN?</h3><div class="option-grid chips" id="featuresOptions" role="group" aria-labelledby="featuresLabel"></div></div>
+        <p class="aside-note" data-i="scopeWarning">Buchungen, Shop, Mehrsprachigkeit oder Integrationen können zusätzlichen Aufwand und laufende Kosten verursachen. Wir prüfen den Umfang später individuell.</p>
+        <div class="field"><label for="featuresNotes" data-i="featuresNotesLabel">Besondere Anforderungen (optional)</label><textarea id="featuresNotes" rows="3" maxlength="650" data-ph="featuresNotesPh" placeholder="Integrationen, Abläufe, spezielle Seiten…"></textarea></div>
+      </div>
+      <div class="stage" data-step="3" hidden>
+        <div class="stage-head"><span class="stage-number">04 / 05</span><h2 id="stageTitle4" tabindex="-1" data-i="s4title">DER FAHRPLAN.</h2><p data-i="s4desc">Inhalte, Domain und Rahmenbedingungen — damit ein späteres Angebot realistisch wird.</p></div>
+        <div class="field"><h3 id="contentLabel" data-i="contentLabel">INHALTE & BILDER</h3><div class="option-grid" id="contentOptions" role="group" aria-labelledby="contentLabel"></div></div>
+        <div class="field"><h3 id="logoLabel" data-i="logoLabel">LOGO / MARKENIDENTITÄT</h3><div class="option-grid" id="logoOptions" role="group" aria-labelledby="logoLabel"></div></div>
+        <div class="field"><h3 id="domainLabel" data-i="domainLabel">DOMAIN & HOSTING</h3><div class="option-grid" id="domainOptions" role="group" aria-labelledby="domainLabel"></div></div>
+        <div class="field"><h3 id="langLabel" data-i="langLabel">SPRACHEN DER ZUKÜNFTIGEN WEBSITE</h3><div class="option-grid chips" id="siteLangOptions" role="group" aria-labelledby="langLabel"></div></div>
+        <div class="two-col">
+          <div class="field"><h3 id="timelineLabel" data-i="timelineLabel">WUNSCHTERMIN</h3><div class="option-grid compact" id="timelineOptions" role="group" aria-labelledby="timelineLabel"></div></div>
+          <div class="field"><h3 id="budgetLabel" data-i="budgetLabel">ORIENTIERUNGSBUDGET</h3><div class="option-grid compact" id="budgetOptions" role="group" aria-labelledby="budgetLabel"></div></div>
+        </div>
+        <p class="aside-note" data-i="budgetWarning">Das Budget ist nur deine grobe Orientierung und kein Angebot oder verbindlicher Preis.</p>
+        <div class="field"><label for="extraNotes" data-i="extraNotesLabel">Sonstige Wünsche und Fragen (optional)</label><textarea id="extraNotes" maxlength="700" rows="3" data-ph="extraNotesPh" placeholder="Weitere Informationen…"></textarea></div>
+      </div>
+      <div class="stage" data-step="4" hidden>
+        <div class="stage-head"><span class="stage-number">05 / 05</span><h2 id="stageTitle5" tabindex="-1" data-i="s5title">DEIN BRIEF.</h2><p data-i="s5desc">Hier ist dein Konzept-Dokument. Du kannst es kopieren oder als Textdatei herunterladen und später teilen.</p></div>
+        <div class="result-wrap">
+          <div class="result-header"><span class="result-id">KRM / CREATIVE DIRECTION / 001</span><span class="result-check" data-i="resultTag">ENTWURF — NICHT VERBINDLICH</span></div>
+          <h3 class="result-title" data-i="resultTitle">DEINE DIGITALE RICHTUNG.</h3>
+          <div id="finalSummary" class="final-summary" aria-live="polite"></div>
+          <p class="legal" data-i="finalDisclaimer">Kein Angebot, keine Bestellung, kein Vertrag. Dieses Dokument wurde ausschließlich in deinem Browser erstellt; es wurde nichts an KRM gesendet.</p>
+        </div>
+        <div class="export-actions">
+          <button id="copy" type="button" class="action-btn primary" data-i="copy">BRIEF KOPIEREN ↗</button>
+          <button id="download" type="button" class="action-btn secondary" data-i="download">ALS .TXT SPEICHERN ↓</button>
+        </div>
+        <div id="exportStatus" class="status-message" role="status" aria-live="polite"></div>
+      </div>
+      <div id="validationError" class="validation" role="alert" hidden></div>
+      <div class="stage-actions">
+        <button id="previous" type="button" class="action-btn ghost" data-i="previous">← ZURÜCK</button>
+        <button id="next" type="button" class="action-btn primary" data-i="next">WEITER ↗</button>
+        <button id="restart" type="button" class="action-btn ghost" data-i="restart" hidden>NEU BEGINNEN ↺</button>
+      </div>
+    </form>
+  </section>
+  <aside class="sidebar" aria-label="Live project preview">
+    <div class="sidebar-inner">
+      <div class="aside-top"><span class="kicker" data-i="asideKicker">LIVE PROJECT SNAPSHOT</span><span class="status-light"></span></div>
+      <div class="orbit" aria-hidden="true"><span class="orbit-ring orbit-one"></span><span class="orbit-ring orbit-two"></span><b>K<span>R</span>M</b></div>
+      <div class="aside-line"><span data-i="brandAside">DEINE MARKE</span><strong id="snapBrand">—</strong></div>
+      <div class="aside-line"><span data-i="industryAside">BRANCHE</span><strong id="snapIndustry">—</strong></div>
+      <div class="aside-line"><span data-i="goalAside">ZIEL</span><strong id="snapGoal">—</strong></div>
+      <div class="aside-line"><span data-i="moodAside">DESIGN</span><strong id="snapMood">—</strong></div>
+      <div class="aside-line"><span data-i="pagesAside">SEITEN</span><strong id="snapPages">—</strong></div>
+      <div class="aside-line"><span data-i="budgetAside">BUDGET</span><strong id="snapBudget">—</strong></div>
+      <div class="aside-foot"><span class="kicker" data-i="asideNoteTitle">YOUR VISION / IN MOTION</span><p data-i="asideNote">Alles bleibt in deinem Browser, bis du selbst entscheidest, den Brief zu kopieren oder herunterzuladen.</p></div>
+    </div>
+  </aside>
+</main>
+<footer><div class="footer-logo">KRM<span>®</span> DIGITAL</div><p data-i="footerNote">FIKTIVES KONZEPT-TOOL / KEINE ANFRAGE ODER ZAHLUNG</p><a href="../" data-i="footerBack">ZURÜCK ZUM PORTFOLIO ↗</a></footer>
+<script src="./app.js" defer></script>
+</body>
+</html>
