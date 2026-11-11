@@ -25,6 +25,10 @@ async function overflow(page,label,width){
    const page=await context.newPage(),errors=[];
    page.on('pageerror',e=>errors.push(e.message));
    await page.goto(host+'/brief-builder/',{waitUntil:'domcontentloaded'});
+   if(width<=860){
+    const mobileOrder=await page.evaluate(()=>({hero:document.querySelector('.workspace').getBoundingClientRect().top,snapshot:document.querySelector('.sidebar').getBoundingClientRect().top}));
+    assert.ok(mobileOrder.hero<mobileOrder.snapshot,'Brief must appear before snapshot on mobile');
+   }
    await page.locator('[data-lang="pt"]').click();
    await page.waitForFunction(()=>document.documentElement.lang==='pt-PT');
    assert.match(await page.locator('#stageTitle').textContent(),/A MARCA/);
