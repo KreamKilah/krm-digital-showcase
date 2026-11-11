@@ -1,0 +1,25 @@
+name: KRM Languages Browser QA
+on:
+  push:
+    paths:
+      - index.html
+      - i18n.js
+      - tests/i18n-smoke.cjs
+      - .github/workflows/krm-languages-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  languages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test 3 languages, preview, brief and mobile layout
+        run: node tests/i18n-smoke.cjs
