@@ -3,7 +3,7 @@ const $$=sel=>[...document.querySelectorAll(sel)];
 const labels={overview:'VISÃO GERAL',projects:'PROJETOS',updates:'COMENTÁRIOS',approvals:'APROVAÇÕES',files:'FICHEIROS',account:'SEGURANÇA',admin:'ADMINISTRAÇÃO'};
 const stages={briefing:'Briefing',design:'Design',development:'Desenvolvimento',review:'Revisão',delivered:'Entregue'};
 const phases={planned:'Planeado',active:'Em curso',done:'Concluído'};
-let me=null,csrf='',projects=[],selectedId=null,detail=null,invitationToken=null;
+let me=null,csrf='',projects=[],selectedId=null,detail=null,invitationToken=null,mfaChallenge=null;
 let noticeTimer;
 function showNotice(message){const e=$('#toast');e.textContent=message;e.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>e.hidden=true,4600)}
 function node(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e}
@@ -26,10 +26,13 @@ function showAuth(){
  for(const id of ['#detail-title','#detail-summary','#account-name','#account-role','#approvalState']){const element=$(id);if(element)element.textContent=''}
  for(const id of ['#login-password','#comment-body','#invite-password','#invite-link','#current-password','#new-password']){const element=$(id);if(element)element.value=''}
  $('#invite-result').hidden=true;$('#project-detail').hidden=true;
+ mfaChallenge=null;$('#mfa-panel').hidden=true;$('#login-panel').hidden=false;$('#invite-panel').hidden=true;
+ $('#mfa-login-code').value='';$('#mfa-setup-password').value='';$('#mfa-setup-secret').value='';$('#mfa-confirm-code').value='';$('#mfa-setup-result').hidden=true;
 }
 function showInvite(token){
  invitationToken=token;$('#auth-screen').hidden=false;$('#app-screen').hidden=true;
  $('#invite-panel').hidden=false;$('#login-panel').hidden=true;
+ $('#mfa-panel').hidden=true;mfaChallenge=null;
 }
 function openApp(user){
  me=user;$('#auth-screen').hidden=true;$('#app-screen').hidden=false;
@@ -55,6 +58,7 @@ function showView(view){
   {overview:'Todas as etapas, decisões e atualizações organizadas.',projects:'Acompanha as versões e o desenvolvimento de cada projeto.',updates:'Mensagens ligadas ao projeto correto.',approvals:'Verifica e aprova versões com histórico.',files:'Documentos e entregáveis protegidos por permissões.',account:'Altera a palavra-passe e controla as tuas sessões.',admin:'Criar projetos e gerir o progresso dos clientes.'}
  )[view];
  if(view==='admin')loadAccess().catch(error=>showNotice(error.message));
+ if(view==='account')loadMfaStatus().catch(error=>showNotice(error.message));
  window.scrollTo(0,0);
 }
 $$('[data-view]').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
@@ -159,9 +163,57 @@ $('#login-form').addEventListener('submit',event=>{
  event.preventDefault();
  submit(event.currentTarget,async()=>{
   const data=await request('/login',{method:'POST',body:{email:$('#login-email').value,password:$('#login-password').value}});
-  $('#login-password').value='';csrf=data.csrf;openApp(data.user);await loadProjects();showNotice('Sessão iniciada com sucesso.');
+  $('#login-password').value='';
+  if(data.mfaRequired){mfaChallenge=data.challengeToken;$('#login-panel').hidden=true;$('#mfa-panel').hidden=false;$('#mfa-login-code').focus();return}
+  csrf=data.csrf;openApp(data.user);await loadProjects();showNotice('Sessão iniciada com sucesso.');
  });
 });
+
+$('#mfa-login-form').addEventListener('submit',event=>{
+ event.preventDefault();
+ submit(event.currentTarget,async()=>{
+  if(!mfaChallenge)throw Error('Desafio expirado. Inicia sessão novamente.');
+  const data=await request('/login/mfa',{method:'POST',body:{challengeToken:mfaChallenge,code:$('#mfa-login-code').value.trim()}});
+  mfaChallenge=null;$('#mfa-login-code').value='';csrf=data.csrf;
+  openApp(data.user);await loadProjects();showNotice('Autenticação 2FA validada com sucesso.');
+ });
+});
+$('#mfa-login-cancel').addEventListener('click',()=>{
+ mfaChallenge=null;$('#mfa-login-code').value='';$('#mfa-panel').hidden=true;$('#login-panel').hidden=false;
+});
+async function loadMfaStatus(){
+ if(!me)return;
+ const d=await request('/me/mfa');
+ $('#mfa-status').textContent=d.enabled
+  ?'2FA ativo. Códigos de recuperação disponíveis: '+d.recoveryCodesRemaining+'. Não partilhes os códigos nem a chave.'
+  :'2FA ainda não está ativo. Podes configurá-lo com uma aplicação autenticadora para proteger o teu acesso.';
+ $('#mfa-setup-form').hidden=!!d.enabled;
+ if(d.enabled)$('#mfa-setup-result').hidden=true;
+}
+$('#mfa-setup-form').addEventListener('submit',event=>{
+ event.preventDefault();
+ submit(event.currentTarget,async()=>{
+  const data=await request('/me/mfa/setup',{method:'POST',body:{currentPassword:$('#mfa-setup-password').value}});
+  $('#mfa-setup-password').value='';$('#mfa-setup-secret').value=data.secret;
+  $('#mfa-setup-result').hidden=false;
+  showNotice('Chave 2FA gerada. Introduz o código da aplicação para ativar.');
+ });
+});
+$('#mfa-confirm-form').addEventListener('submit',event=>{
+ event.preventDefault();
+ submit(event.currentTarget,async()=>{
+  const data=await request('/me/mfa/confirm',{method:'POST',body:{code:$('#mfa-confirm-code').value.trim()}});
+  $('#mfa-confirm-code').value='';$('#mfa-setup-secret').value='';csrf='';
+  $('#mfa-codes-output').textContent=data.recoveryCodes.join('\n');
+  $('#mfa-codes-modal').showModal();
+ });
+});
+$('#mfa-codes-modal').addEventListener('cancel',event=>{event.preventDefault();showNotice('Guarda os códigos de recuperação antes de fechar.')});
+$('#mfa-codes-done').addEventListener('click',()=>{
+ $('#mfa-codes-modal').close();$('#mfa-codes-output').textContent='';
+ showAuth();showNotice('2FA ativado. Entra novamente com palavra-passe e código.');
+});
+
 $('#invite-form').addEventListener('submit',event=>{
  event.preventDefault();
  submit(event.currentTarget,async()=>{
