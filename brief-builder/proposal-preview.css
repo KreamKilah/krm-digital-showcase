@@ -67,3 +67,9 @@
 .proposal-brief-list .proposal-summary-row{padding:10px 0}
 .proposal-brief-list dt{font:700 10px/1.65 var(--mono);color:#716a8a;text-transform:uppercase}
 .proposal-brief-list dd{font-size:12px;line-height:1.6;margin:0;overflow-wrap:anywhere}
+
+.proposal-client-demo{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #c4bbec59;background:#c0b6ff10;padding:16px 18px;margin:0 0 24px}
+.proposal-client-demo a{font:700 11px/1.5 var(--mono);color:#e2ddff;border-bottom:1px solid #b0a6ec;white-space:nowrap;padding-bottom:3px}
+.proposal-client-demo a:hover{color:var(--coral);border-color:var(--coral)}
+.proposal-client-demo p{font-size:11px;line-height:1.6;color:#bfb9d7;max-width:260px}
+@media(max-width:650px){.proposal-client-demo{display:block}.proposal-client-demo p{margin-top:12px}}
