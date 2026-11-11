@@ -17,7 +17,7 @@ privacy:'Zur echten Aktivierung benötigen wir noch einen sicheren Server, Daten
 entryText:'Möchtest du sehen, wie die nächste Phase mit Kontakt- und Anfragebestätigung aussehen könnte?',open:'ANGEBOTSANFRAGE TESTEN ↗',
 errorName:'Bitte gib einen Namen mit mindestens 2 Zeichen ein.',errorEmail:'Bitte gib eine gültige E-Mail-Adresse ein.',errorAck:'Bestätige bitte, dass du den Demo-Modus verstanden hast.',
 subject:'Beispiel: Dein Projektentwurf bei KRM DIGITAL',emailGreeting:'Hallo',emailReceived:'Dies ist eine DEMO-VORSCHAU, wie KRM den Eingang einer unverbindlichen Anfrage bestätigen könnte.',emailHuman:'Bei einem echten Dienst würden wir dein Briefing persönlich prüfen und dir gegebenenfalls Rückfragen oder ein individuelles Angebot senden.',emailNothing:'WICHTIG: Es wurde keine Anfrage empfangen und keine E-Mail versendet.',
-docTitle:'KRM DIGITAL — ANGEBOTSANFRAGE / DEMO-ENTWURF',docNotice:'NUR VORSCHAU — NICHT GESENDET. KEINE BESTELLUNG ODER VERTRAG.',docContact:'KONTAKT',docProject:'PROJEKT-BRIEF',name:'Kontaktname',email:'E-Mail',company:'Unternehmen',country:'Land',customerType:'Kundentyp',message:'Zusätzliche Nachricht',notSpecified:'Nicht angegeben',
+docTitle:'KRM DIGITAL — ANGEBOTSANFRAGE / DEMO-ENTWURF',docNotice:'NUR VORSCHAU — NICHT GESENDET. KEINE BESTELLUNG ODER VERTRAG.',docContact:'KONTAKT',docProject:'PROJEKT-BRIEF',expandBrief:'VOLLSTÄNDIGEN PROJEKT-BRIEF ANZEIGEN',name:'Kontaktname',email:'E-Mail',company:'Unternehmen',country:'Land',customerType:'Kundentyp',message:'Zusätzliche Nachricht',notSpecified:'Nicht angegeben',
 copied:'✓ Demo-Entwurf kopiert. Nichts wurde gesendet.',copyError:'Kopieren blockiert. Bitte speichere die Textdatei.',saved:'✓ Textdatei vorbereitet. Nichts wurde gesendet.',countries:{DE:'Deutschland',PT:'Portugal',ES:'Spanien',OTHER:'Anderes Land'}
 },
 pt:{
@@ -35,7 +35,7 @@ privacy:'Antes de ativarmos pedidos reais, precisamos de um servidor seguro, pol
 entryText:'Queres ver como funcionará a próxima etapa, com dados de contacto e confirmação do pedido?',open:'TESTAR PEDIDO DE PROPOSTA ↗',
 errorName:'Introduz um nome com pelo menos 2 caracteres.',errorEmail:'Introduz um endereço de e-mail válido.',errorAck:'Confirma que compreendes que isto é apenas uma demonstração.',
 subject:'Exemplo: O teu pedido à KRM DIGITAL',emailGreeting:'Olá',emailReceived:'Esta é uma PRÉ-VISUALIZAÇÃO de como a KRM poderá confirmar a receção de um pedido de proposta.',emailHuman:'Num serviço real, analisaríamos pessoalmente o briefing e entraríamos em contacto para esclarecer dúvidas ou apresentar uma proposta.',emailNothing:'IMPORTANTE: nenhum pedido foi recebido e nenhum e-mail foi enviado.',
-docTitle:'KRM DIGITAL — RASCUNHO DE PEDIDO / DEMONSTRAÇÃO',docNotice:'APENAS DEMONSTRAÇÃO — NÃO ENVIADO. NÃO É CONTRATO NEM ENCOMENDA.',docContact:'CONTACTO',docProject:'BRIEFING DO PROJETO',name:'Nome',email:'E-mail',company:'Empresa',country:'País',customerType:'Tipo de cliente',message:'Mensagem adicional',notSpecified:'Não indicado',
+docTitle:'KRM DIGITAL — RASCUNHO DE PEDIDO / DEMONSTRAÇÃO',docNotice:'APENAS DEMONSTRAÇÃO — NÃO ENVIADO. NÃO É CONTRATO NEM ENCOMENDA.',docContact:'CONTACTO',docProject:'BRIEFING DO PROJETO',expandBrief:'VER BRIEFING COMPLETO DO PROJETO',name:'Nome',email:'E-mail',company:'Empresa',country:'País',customerType:'Tipo de cliente',message:'Mensagem adicional',notSpecified:'Não indicado',
 copied:'✓ Rascunho de demonstração copiado. Nada foi enviado.',copyError:'Não foi possível copiar. Guarda o ficheiro de texto.',saved:'✓ Ficheiro de texto preparado. Nada foi enviado.',countries:{DE:'Alemanha',PT:'Portugal',ES:'Espanha',OTHER:'Outro país'}
 },
 en:{
@@ -53,7 +53,7 @@ privacy:'Before enabling real requests, we need a secure server, privacy notice,
 entryText:'Want to see how a quote request could work, with contact details and an example confirmation?',open:'PREVIEW PROPOSAL REQUEST ↗',
 errorName:'Enter a name of at least 2 characters.',errorEmail:'Enter a valid email address.',errorAck:'Confirm you understand that this is only a demo.',
 subject:'Example: Your KRM DIGITAL project request',emailGreeting:'Hello',emailReceived:'This is a PREVIEW of how KRM could confirm receipt of a non-binding proposal request.',emailHuman:'In a live service, we would personally review your brief and follow up with questions or a customized quote.',emailNothing:'IMPORTANT: no inquiry was received and no email was sent.',
-docTitle:'KRM DIGITAL — REQUEST DRAFT / DEMO',docNotice:'PREVIEW ONLY — NOT SENT. NOT AN ORDER OR CONTRACT.',docContact:'CONTACT',docProject:'PROJECT BRIEF',name:'Contact name',email:'Email',company:'Company',country:'Country',customerType:'Customer type',message:'Additional message',notSpecified:'Not provided',
+docTitle:'KRM DIGITAL — REQUEST DRAFT / DEMO',docNotice:'PREVIEW ONLY — NOT SENT. NOT AN ORDER OR CONTRACT.',docContact:'CONTACT',docProject:'PROJECT BRIEF',expandBrief:'SHOW COMPLETE PROJECT BRIEF',name:'Contact name',email:'Email',company:'Company',country:'Country',customerType:'Customer type',message:'Additional message',notSpecified:'Not provided',
 copied:'✓ Demo draft copied. Nothing was sent.',copyError:'Could not copy. Please save a text file.',saved:'✓ Text file prepared. Nothing was sent.',countries:{DE:'Germany',PT:'Portugal',ES:'Spain',OTHER:'Other country'}
 }};
 let generated=false;
@@ -96,6 +96,15 @@ function renderResult(){
  }
  const message=data.form[5][1],extra=document.createElement('p');extra.className='proposal-message';
  extra.textContent=d.message+': '+message;container.appendChild(extra);
+ const details=document.createElement('details');details.className='proposal-brief-details';
+ const summary=document.createElement('summary');summary.textContent=d.expandBrief;details.appendChild(summary);
+ const body=document.createElement('dl');body.className='proposal-brief-list';
+ for(const [label,value] of data.briefing){
+  const row=document.createElement('div');row.className='proposal-summary-row';
+  const dt=document.createElement('dt');dt.textContent=label;
+  const dd=document.createElement('dd');dd.textContent=value;row.append(dt,dd);body.appendChild(row);
+ }
+ details.appendChild(body);container.appendChild(details);
  $('proposalEmail').textContent=d.subject+'\n\n'+d.emailGreeting+' '+$('leadName').value.trim()+',\n\n'+d.emailReceived+'\n\n'+d.emailHuman+'\n\n'+d.emailNothing+'\n\nKRM DIGITAL';
 }
 function setInvalid(id,yes){$(id).setAttribute('aria-invalid',String(yes))}
