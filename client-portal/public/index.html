@@ -32,6 +32,16 @@
    </form>
    <div class="auth-note">Acesso apenas por convite. Ainda não existem inscrições públicas nem recuperação automática de palavra-passe.</div>
   </section>
+  <section id="mfa-panel" aria-labelledby="mfa-title" class="auth-panel" hidden>
+   <div class="eyebrow">PROTEÇÃO ADICIONAL</div><h1 id="mfa-title">Confirma a tua identidade.</h1>
+   <p>Introduz o código de 6 dígitos da aplicação autenticadora ou um código de recuperação.</p>
+   <form id="mfa-login-form"><label for="mfa-login-code">Código 2FA ou recuperação</label>
+    <input id="mfa-login-code" autocomplete="one-time-code" required maxlength="39" placeholder="000000 ou XXXX-XXXX-…">
+    <button type="submit" class="primary">Verificar e entrar ↗</button>
+   </form>
+   <button id="mfa-login-cancel" type="button" class="secondary-action" style="margin-top:20px">Voltar ao login</button>
+   <p class="small" style="margin-top:16px">O desafio expira após 5 minutos. Se perdeste os códigos, contacta o administrador.</p>
+  </section>
   <section id="invite-panel" aria-labelledby="invite-title" class="auth-panel" hidden>
    <div class="eyebrow">CONVITE EXCLUSIVO</div>
    <h1 id="invite-title">Criar acesso.</h1>
@@ -124,7 +134,26 @@
       <p class="bodycopy">Se suspeitas que outra pessoa tem acesso à tua conta, termina todas as sessões imediatamente e volta a entrar com segurança.</p>
       <button type="button" class="primary" id="account-revoke-all" style="margin-top:18px">Sair de todos os dispositivos ↗</button>
       <div class="section-divider"></div>
-      <p class="bodycopy">Ainda não existe recuperação automática de palavras-passe nem autenticação de dois fatores ativa. A fase de produção continua bloqueada até essas proteções serem implementadas e testadas.</p>
+      <p class="bodycopy">A recuperação automática de palavra-passe e a verificação de email ainda não estão ativas. Não introduzas dados de clientes reais enquanto não concluirmos os requisitos de lançamento.</p>
+     </article>
+
+     <article class="panel">
+      <div class="panelhead"><h2>Autenticação em dois fatores</h2><span>2FA / TOTP</span></div>
+      <p id="mfa-status" class="bodycopy" aria-live="polite">A verificar a configuração…</p>
+      <form id="mfa-setup-form" class="formblock" hidden>
+       <label for="mfa-setup-password">Confirma a palavra-passe atual</label>
+       <input id="mfa-setup-password" type="password" autocomplete="current-password" required>
+       <button class="primary" type="submit">Preparar autenticação 2FA ↗</button>
+      </form>
+      <div id="mfa-setup-result" hidden>
+       <p class="bodycopy" style="margin:16px 0">Adiciona a conta manualmente na tua aplicação de autenticação (TOTP, 6 dígitos, 30 segundos). Nunca partilhes a chave.</p>
+       <div class="formblock"><label for="mfa-setup-secret">Chave de configuração privada</label><input id="mfa-setup-secret" readonly spellcheck="false" autocomplete="off"></div>
+       <form id="mfa-confirm-form" class="formblock">
+        <label for="mfa-confirm-code">Código de 6 dígitos para ativar</label>
+        <input id="mfa-confirm-code" inputmode="numeric" autocomplete="one-time-code" required minlength="6" maxlength="6" placeholder="000000">
+        <button class="primary" type="submit">Ativar 2FA e guardar códigos de recuperação ↗</button>
+       </form>
+      </div>
      </article>
     </div>
    </section>
@@ -163,5 +192,11 @@
   </div>
  </div>
 </div>
+<dialog id="mfa-codes-modal" aria-labelledby="mfa-codes-title" class="recovery-modal">
+ <h2 id="mfa-codes-title">Guarda estes códigos.</h2>
+ <p class="bodycopy">Estes 8 códigos de recuperação só podem ser usados uma vez. Guarda-os num gestor de passwords ou outro local seguro. A tua sessão foi terminada ao ativar 2FA.</p>
+ <pre id="mfa-codes-output" aria-label="Códigos de recuperação"></pre>
+ <button type="button" id="mfa-codes-done" class="primary">Guardei os códigos — voltar ao login ↗</button>
+</dialog>
 </body>
 </html>
