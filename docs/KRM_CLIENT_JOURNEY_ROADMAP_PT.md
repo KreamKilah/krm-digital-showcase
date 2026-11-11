@@ -98,3 +98,11 @@ Transformar o portefólio KRM num sistema organizado de captação, proposta, pr
 2. Completar os dados e documentos legais da KRM para receber pedidos verdadeiros.
 3. Implementar backend seguro de receção + estado + confirmação por e-mail, mantendo preços/aceitações sob revisão humana.
 4. Integrar a administração privada e Client Space apenas após autenticação e permissões testadas.
+
+## Decisão de estratégia — 11/11/2026: validar antes de registar
+- O proprietário decidiu **adiar o registo formal da KRM** enquanto a ideia ainda está a ser preparada e testada.
+- A KRM mantém-se, para já, em **modo de protótipo e validação**, sem pedidos comerciais ativos, contratos, cobrança, faturação ou tratamento de dados de clientes reais.
+- Prioridade: concluir QA do site, briefing, demonstração de pedido e Client Space; recolher feedback de utilizadores em contexto não comercial e validar clareza, desempenho e design.
+- **Não confundir primeiro cliente com começo da atividade comercial**: caso a atividade seja classificada como Gewerbe, o registo deve ocorrer aquando do início da atividade, não só quando houver receita; confirmar enquadramento exato e obrigações com Gewerbeamt/Finanzamt antes de começar a oferecer serviços comercialmente.
+- Para comercializar: confirmar Gewerbe vs Freiberufler, completar Impressum e Datenschutz, formalizar propostas/contratos, ativar submissão segura, só então faturação/pagamentos.
+- Referências oficiais: https://verwaltung.bund.de/leistungsverzeichnis/de/leistung/99050012104000 e https://www.existenzgruendungsportal.de/Redaktion/DE/BMWK-Infopool/Antworten/Gruendungsplanung/Gewerbe-Genehmigungen/Anmeldung/Gruendung-vorbereiten
