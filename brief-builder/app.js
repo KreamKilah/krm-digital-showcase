@@ -113,7 +113,11 @@ function renderOptions(){
       button.addEventListener('click',()=>{
         if(multiple.has(group)){if(state[group].has(key))state[group].delete(key);else state[group].add(key)}
         else state[group]=state[group]===key?null:key;
-        renderOptions();updateAside();if(state.step===4)renderSummary();
+        parent.querySelectorAll('button').forEach(choice=>{
+          const code=choice.dataset.option;
+          choice.setAttribute('aria-pressed',String(multiple.has(group)?state[group].has(code):state[group]===code));
+        });
+        updateAside();if(state.step===4)renderSummary();
         $('validationError').hidden=true;
       });
       parent.appendChild(button);
