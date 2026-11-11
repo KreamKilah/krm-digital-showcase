@@ -107,6 +107,12 @@ async function checkOverflow(page,width){
     'CONCEITO NÃO VINCULATIVO'
    ].join('\n');
    await page.locator('#importBriefFile').setInputFiles({name:'KRM-demo.txt',mimeType:'text/plain',buffer:Buffer.from(sampleBrief)});
+   try{
+    await page.waitForFunction(()=>document.querySelectorAll('.lane-card').length===6,null,{timeout:4000});
+   }catch(error){
+    console.log('IMPORT DEBUG',JSON.stringify(await page.evaluate(()=>({toast:document.querySelector('#toast').textContent,visible:!document.querySelector('#toast').hidden,files:document.querySelector('#importBriefFile').files?.length,html:document.querySelector('#pipelineBoard').textContent.slice(0,160)}))));
+    throw error;
+   }
    assert.equal(await page.locator('.lane-card').count(),6);
    assert.match(await page.locator('#pipelineBoard').textContent(),/Café Teste/);
    await page.locator('#importBriefFile').setInputFiles({name:'invalid.txt',mimeType:'text/plain',buffer:Buffer.from('Não é um briefing KRM')});
