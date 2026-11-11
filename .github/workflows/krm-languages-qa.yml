@@ -6,6 +6,7 @@ on:
       - i18n.js
       - tests/i18n-smoke.cjs
       - tests/brief-builder-smoke.cjs
+      - tests/proposal-preview-smoke.cjs
       - brief-builder/**
       - .github/workflows/krm-languages-qa.yml
   workflow_dispatch:
@@ -27,3 +28,4 @@ jobs:
         run: |
           node tests/i18n-smoke.cjs
           node tests/brief-builder-smoke.cjs
+          node tests/proposal-preview-smoke.cjs
