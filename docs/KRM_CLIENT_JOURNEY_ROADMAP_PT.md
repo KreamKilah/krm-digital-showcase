@@ -106,3 +106,11 @@ Transformar o portefólio KRM num sistema organizado de captação, proposta, pr
 - **Não confundir primeiro cliente com começo da atividade comercial**: caso a atividade seja classificada como Gewerbe, o registo deve ocorrer aquando do início da atividade, não só quando houver receita; confirmar enquadramento exato e obrigações com Gewerbeamt/Finanzamt antes de começar a oferecer serviços comercialmente.
 - Para comercializar: confirmar Gewerbe vs Freiberufler, completar Impressum e Datenschutz, formalizar propostas/contratos, ativar submissão segura, só então faturação/pagamentos.
 - Referências oficiais: https://verwaltung.bund.de/leistungsverzeichnis/de/leistung/99050012104000 e https://www.existenzgruendungsportal.de/Redaktion/DE/BMWK-Infopool/Antworten/Gruendungsplanung/Gewerbe-Genehmigungen/Anmeldung/Gruendung-vorbereiten
+
+## Control Center DEMO — V1 (11/11/2026)
+- Painel interno **em versão pública de demonstração**, NÃO é uma aplicação privada. Acesso: https://kreamkilah.github.io/krm-digital-showcase/control-center-demo/
+- Módulos concluídos na demo: Dashboard, Pedidos/Pipeline, Projetos, Propostas (valores fictícios), Tarefas e Histórico.
+- Permite importar TXT gerado no Brief Builder **localmente no navegador** para um pedido fictício. Não há API, sincronização com Client Space, e-mails enviados, contas ou armazenamento.
+- Testes automáticos Chromium aprovados para 360/390/768/1440 px com importação, filtros, estados, tarefas, propostas e verificação de ausência de submissão: https://github.com/KreamKilah/krm-digital-showcase/actions/runs/43117784497
+- Ficheiros de desenvolvimento: control-center-demo/index.html, style.css, app.js. Plano de testes: docs/KRM_CONTROL_CENTER_V1_PT.md.
+- A futura versão profissional precisa de login privado, base de dados com acesso por projeto, retenção/eliminação segura e registo regularizado antes de iniciar atividade comercial.
